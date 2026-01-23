@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import sys
+import os
 from microsoft_outlook_appointment_scheduling_assistant.crew import MicrosoftOutlookAppointmentSchedulingAssistantCrew
 
-# This main file is intended to be a way for your to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
+# --- FIX: Ensure the environment knows to use Gemini if not already set ---
+# This looks for the key you uploaded during 'crewai deploy create'
+if not os.getenv("GEMINI_API_KEY"):
+    print("Warning: GEMINI_API_KEY not found in environment variables.")
 
 def run():
     """
@@ -16,8 +17,13 @@ def run():
         'apellido': 'sample_value',
         'apellidos': 'sample_value'
     }
-    MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().kickoff(inputs=inputs)
-
+    try:
+        # We initialize the crew and kickoff
+        # Make sure your crew.py is using the LLM(model="gemini/gemini-1.5-flash")
+        MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().kickoff(inputs=inputs)
+    except Exception as e:
+        print(f"CRITICAL ERROR during kickoff: {e}")
+        sys.exit(1)
 
 def train():
     """
@@ -29,10 +35,14 @@ def train():
         'apellidos': 'sample_value'
     }
     try:
-        MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
-
+        MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().train(
+            n_iterations=int(sys.argv[1]), 
+            filename=sys.argv[2], 
+            inputs=inputs
+        )
     except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
+        print(f"An error occurred while training the crew: {e}")
+        sys.exit(1)
 
 def replay():
     """
@@ -40,9 +50,9 @@ def replay():
     """
     try:
         MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().replay(task_id=sys.argv[1])
-
     except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
+        print(f"An error occurred while replaying the crew: {e}")
+        sys.exit(1)
 
 def test():
     """
@@ -54,10 +64,16 @@ def test():
         'apellidos': 'sample_value'
     }
     try:
-        MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
-
+        # FIX: Changed 'openai_model_name' to a generic model variable to avoid OpenAI errors
+        model_name = sys.argv[2] if len(sys.argv) > 2 else "gemini/gemini-1.5-flash"
+        MicrosoftOutlookAppointmentSchedulingAssistantCrew().crew().test(
+            n_iterations=int(sys.argv[1]), 
+            openai_model_name=model_name, 
+            inputs=inputs
+        )
     except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")
+        print(f"An error occurred while testing the crew: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
