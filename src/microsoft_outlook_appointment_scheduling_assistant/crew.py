@@ -191,11 +191,12 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
     def crew(self) -> Crew:
         """Creates the MicrosoftOutlookAppointmentSchedulingAssistant crew"""
         return Crew(
-            agents=self.agents,  # Automatically created by the @agent decorator
-            tasks=self.tasks,  # Automatically created by the @task decorator
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            chat_llm=LLM(model="openai/gpt-4o-mini"),
+            # 1. Change the model to Gemini
+            # 2. Add memory=False to prevent the OpenAI Embedder error
+            llm=LLM(model="gemini/gemini-1.5-flash"), 
+             memory=False 
         )
-
-

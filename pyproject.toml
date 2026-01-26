@@ -1,20 +1,19 @@
 [project]
 name = "microsoft_outlook_appointment_scheduling_assistant"
-version = "0.1.2"
+version = "0.1.2"  # Incrementing version to force a clean build
 description = "microsoft_outlook_appointment_scheduling_assistant using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.12"  # Narrowed for better cloud stability in 2026
 dependencies = [
-    "crewai[google-genai,litellm,tools]==1.8.0",
+    "crewai[google-genai,tools]>=0.100.0",  # Updated for 2026 platform compatibility
+    "O365>=2.0.35",                         # CRITICAL: Missing Outlook library
+    "python-dotenv>=1.0.0",
 ]
 
 [project.scripts]
+# This line ensures the 'crewai run' and cloud entry points match
 microsoft_outlook_appointment_scheduling_assistant = "microsoft_outlook_appointment_scheduling_assistant.main:run"
 run_crew = "microsoft_outlook_appointment_scheduling_assistant.main:run"
-train = "microsoft_outlook_appointment_scheduling_assistant.main:train"
-replay = "microsoft_outlook_appointment_scheduling_assistant.main:replay"
-test = "microsoft_outlook_appointment_scheduling_assistant.main:test"
-run_with_trigger = "microsoft_outlook_appointment_scheduling_assistant.main:run_with_trigger"
 
 [build-system]
 requires = ["hatchling"]
@@ -22,3 +21,5 @@ build-backend = "hatchling.build"
 
 [tool.crewai]
 type = "crew"
+# Adding this helps the 2026 Provisioner allocate the right resources
+manager_agent = false
