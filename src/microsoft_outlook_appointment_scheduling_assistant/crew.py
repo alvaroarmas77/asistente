@@ -31,8 +31,10 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini/gemini-3-flash-preview",
+                model="gemini/gemini-1.5-flash",
                 temperature=0.7,
+                max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
+                max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
             ),
             
         )
@@ -60,8 +62,10 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini/gemini-3-flash-preview",
+                model="gemini/gemini-1.5-flash",
                 temperature=0.7,
+                max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
+                max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
             ),
             
         )
@@ -87,8 +91,10 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini/gemini-3-flash-preview",
+                model="gemini/gemini-1.5-flash",
                 temperature=0.7,
+                max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
+                max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
             ),
             
         )
@@ -110,8 +116,10 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini/gemini-3-flash-preview",
+                model="gemini/gemini-1.5-flash",
                 temperature=0.7,
+                max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
+                max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
             ),
             
         )
@@ -133,8 +141,10 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini/gemini-3-flash-preview",
+                model="gemini/gemini-1.5-flash",
                 temperature=0.7,
+                max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
+                max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
             ),
             
         )
