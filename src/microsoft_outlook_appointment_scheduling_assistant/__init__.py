@@ -1,0 +1,1 @@
+self.shared_llm = LLM(model="gemini/gemini-1.5-flash", temperature=0.7)
