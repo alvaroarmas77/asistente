@@ -31,7 +31,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini-1.5-flash",
+                model="google/gemini-1.5-flash",
                 temperature=0.7,
                 max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
                 max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
@@ -62,7 +62,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini-1.5-flash",
+                model="google/gemini-1.5-flash",
                 temperature=0.7,
                 max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
                 max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
@@ -91,7 +91,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini-1.5-flash",
+                model="google/gemini-1.5-flash",
                 temperature=0.7,
                 max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
                 max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
@@ -116,7 +116,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini-1.5-flash",
+                model="google/gemini-1.5-flash",
                 temperature=0.7,
                 max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
                 max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
@@ -141,7 +141,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             
             max_execution_time=None,
             llm=LLM(
-                model="gemini-1.5-flash",
+                model="google/gemini-1.5-flash",
                 temperature=0.7,
                 max_rpm=2,      # <--- LIMITA A 2 SOLICITUDES POR MINUTO
                 max_iter=3      # <--- EVITA QUE EL AGENTE SE BUCLEE Y GASTE TU CUOTA
@@ -207,6 +207,6 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             verbose=True,
             # 1. Change the model to Gemini
             # 2. Add memory=False to prevent the OpenAI Embedder error
-            llm=LLM(model="gemini-1.5-flash"), 
+            llm=LLM(model="google/gemini-1.5-flash"), 
              memory=False 
         )
