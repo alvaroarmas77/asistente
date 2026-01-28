@@ -1,10 +1,7 @@
-# Core CrewAI with Gemini support
-crewai[google-genai,tools]>=0.100.0
+crewai>=0.100.0
 crewai-tools>=0.14.0
-
-# Database fix for GitHub Runners
+langchain-google-genai>=2.0.0
+google-generativeai>=0.8.0
 pysqlite3-binary
-
-# Utilities
 python-dotenv
 pyyaml
