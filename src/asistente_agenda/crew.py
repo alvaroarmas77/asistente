@@ -20,7 +20,7 @@ class AsistenteAgendaCrew:
         self.shared_llm = LLM(
             model="custom/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY"),
-            base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             temperature=0.5
         )
 

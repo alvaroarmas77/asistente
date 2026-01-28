@@ -19,7 +19,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Added pysqlite3-binary to fix the SQLite version issue
-          pip install crewai litellm google-genai pysqlite3-binary
+          pip install crewai litellm google-generativeai pysqlite3-binary fastapi uvicorn
       - name: Run CrewAI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
