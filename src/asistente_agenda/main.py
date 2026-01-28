@@ -4,7 +4,10 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 #!/usr/bin/env python
 import os
-from asistente_agenda.crew import AsistenteAgendaCrew
+try:
+    from asistente_agenda.crew import AsistenteAgendaCrew
+except ImportError:
+    from crew import AsistenteAgendaCrew
 
 # Ensure the Gemini Key is recognized if you use it in this file
 # os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
