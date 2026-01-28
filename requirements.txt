@@ -1,20 +1,10 @@
-# Core Framework (Updated for 2026 stability)
-crewai>=1.9.0
+# Core CrewAI with Gemini support
+crewai[google-genai,tools]>=0.100.0
 crewai-tools>=0.14.0
-langchain>=0.3.0
 
-# Database Fix (Critical for Linux/GitHub Runners)
+# Database fix for GitHub Runners
 pysqlite3-binary
+
+# Utilities
 python-dotenv
-
-# Core Utilities
-pydantic>=2.0.0
-openai>=1.0.0
-requests
-PyYAML
-
-# Specialized Tools
-pypdfium2
-pdfminer.six
-pdfplumber
-openpyxl
+pyyaml
