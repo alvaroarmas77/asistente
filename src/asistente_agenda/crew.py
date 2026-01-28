@@ -20,8 +20,9 @@ class AsistenteAgendaCrew:
         self.shared_llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             google_api_key=os.getenv("GEMINI_API_KEY"),
-            # Forcing the stable API version often fixes the 404/v1beta issue
-            client_options={"api_version": "v1"} 
+            temperature=0.5,
+            # 'grpc' is often more stable in GitHub Runners than the default 'rest'
+            transport="grpc" 
         )
     @agent
     def appointment_request_parser(self) -> Agent:
