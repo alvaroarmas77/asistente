@@ -18,11 +18,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install crewai litellm google-genai
 
       - name: Run CrewAI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           # This is a hidden flag some Google SDKs respect
-          GOOGLE_API_BASE: "https://generativelanguage.googleapis.com/v1"
         run: python src/asistente_agenda/main.py run
