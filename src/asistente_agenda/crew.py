@@ -17,12 +17,12 @@ class AsistenteAgendaCrew:
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
     def __init__(self):
-        # This code MUST be here and MUST be indented
         self.shared_llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
-            google_api_key=os.getenv("GEMINI_API_KEY")
+            google_api_key=os.getenv("GEMINI_API_KEY"),
+            # Forcing the stable API version often fixes the 404/v1beta issue
+            client_options={"api_version": "v1"} 
         )
-
     @agent
     def appointment_request_parser(self) -> Agent:
         return Agent(
