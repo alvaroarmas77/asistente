@@ -16,7 +16,7 @@ class AsistenteAgendaCrew:
     agents_config = os.path.join(base_path, 'config', 'agents.yaml')
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
-  def __init__(self):
+    def __init__(self):
         # This code MUST be here and MUST be indented
         self.shared_llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
