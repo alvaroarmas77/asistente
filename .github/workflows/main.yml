@@ -22,9 +22,7 @@ jobs:
 
       - name: Run CrewAI
         env:
-          # Use the NAME of the secret you set in CMD, not the value
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # This tells Python to look inside the 'src' folder for your modules
-          PYTHONPATH: ${{ github.workspace }}/src
-        # Added 'run' so your main.py knows which function to execute
+          # This is a hidden flag some Google SDKs respect
+          GOOGLE_API_VERSION: v1
         run: python src/asistente_agenda/main.py run

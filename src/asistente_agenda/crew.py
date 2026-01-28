@@ -19,11 +19,15 @@ class AsistenteAgendaCrew:
 
     def __init__(self):
         self.shared_llm = LLM(
-            # Adding '-latest' often bypasses the v1beta routing issue
-            model="google/gemini-1.5-flash-latest", 
+            model="google/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY"),
-            temperature=0.5
+            temperature=0.5,
+            # This forces the underlying google-genai SDK to use v1
+            config={
+                "api_version": "v1"
+            }
         )
+
     @agent
     def appointment_request_parser(self) -> Agent:
         return Agent(
