@@ -17,5 +17,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run CrewAI
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python main.py
+          OPENAI_API_KEY=NA
+          GEMINI_API_KEY: ${{ secrets.AIzaSyBKgcEfq3AhFbJiEtHnIdWQtgWhMUh0gXU }}
+        run: python src/asistente_agenda/main.py
