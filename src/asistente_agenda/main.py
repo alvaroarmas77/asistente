@@ -1,14 +1,13 @@
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 #!/usr/bin/env python
-import sys
+import os
 from asistente_agenda.crew import AsistenteAgendaCrew
 
-# This main file is intended to be a way for your to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
+# Ensure the Gemini Key is recognized if you use it in this file
+# os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
 def run():
     """
@@ -20,7 +19,6 @@ def run():
     }
     AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
 
-
 def train():
     """
     Train the crew for a given number of iterations.
@@ -30,8 +28,7 @@ def train():
         'apellido': 'sample_value'
     }
     try:
-        AsistenteAgendaCrew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
-
+        AsistenteAgendaCrew().crew().train(n_iterations=int(sys.argv[2]), filename=sys.argv[3], inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
 
@@ -40,8 +37,7 @@ def replay():
     Replay the crew execution from a specific task.
     """
     try:
-        AsistenteAgendaCrew().crew().replay(task_id=sys.argv[1])
-
+        AsistenteAgendaCrew().crew().replay(task_id=sys.argv[2])
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
 
@@ -54,8 +50,8 @@ def test():
         'apellido': 'sample_value'
     }
     try:
-        AsistenteAgendaCrew().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
-
+        # Changed sys.argv indices because 'test' is sys.argv[1]
+        AsistenteAgendaCrew().crew().test(n_iterations=int(sys.argv[2]), openai_model_name=sys.argv[3], inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while testing the crew: {e}")
 
@@ -76,10 +72,3 @@ if __name__ == "__main__":
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
-researcher = Agent(
-  role='Researcher',
-  goal='Gather data about...',
-  backstory='Expert analyst...',
-  max_iter=3,  # Stops the agent after 3 attempts if it gets stuck
-  allow_delegation=False
-)
