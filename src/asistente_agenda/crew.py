@@ -1,24 +1,26 @@
 import os
-from crewai import LLM
-from crewai import Agent, Crew, Process, Task
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
-# Import your custom tool
-from asistente_agenda.tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
+# This helps find the YAML files correctly on GitHub
+base_path = os.path.dirname(__file__)
 
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
+    
+    # Explicitly point to the YAML files
+    agents_config = os.path.join(base_path, 'config/agents.yaml')
+    tasks_config = os.path.join(base_path, 'config/tasks.yaml')
 
     def __init__(self):
-        # We fetch the key from the environment variable we set in GitHub Secrets
-        self.gemini_api_key = os.getenv("GEMINI_API_KEY")
-        
-        # Define a shared LLM configuration to keep things DRY (Don't Repeat Yourself)
-        self.shared_llm = LLM(
+        self.gemini_llm = LLM(
             model="gemini/gemini-1.5-flash",
-            temperature=0.7,
-            api_key=self.gemini_api_key
+            api_key=os.getenv("GEMINI_API_KEY")
         )
 
     @agent
