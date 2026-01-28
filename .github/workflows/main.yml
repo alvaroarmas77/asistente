@@ -1,21 +1,30 @@
 name: Deploy and Run Crew
 on:
   push:
-    branches: [ main ]  # Runs every time you push to main
-  workflow_dispatch:      # Allows you to run it manually from GitHub UI
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   execute-crew:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Run CrewAI
         env:
-          GEMINI_API_KEY: ${{ secrets.AIzaSyBKgcEfq3AhFbJiEtHnIdWQtgWhMUh0gXU }}
-        run: python src/asistente_agenda/main.py
+          # Use the NAME of the secret you set in CMD, not the value
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # This tells Python to look inside the 'src' folder for your modules
+          PYTHONPATH: ${{ github.workspace }}/src
+        # Added 'run' so your main.py knows which function to execute
+        run: python src/asistente_agenda/main.py run
