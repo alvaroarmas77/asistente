@@ -1,3 +1,10 @@
+name: Execute Agenda Crew
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # This allows you to run it manually from the Actions tab
+
 jobs:
   execute-crew:
     runs-on: ubuntu-latest
@@ -12,18 +19,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Added apscheduler to prevent LiteLLM logging crashes
-          # Added crewai[tools] to ensure all base dependencies are present
           pip install crewai[tools] litellm google-generativeai pysqlite3-binary fastapi uvicorn apscheduler
-
-      - name: Debug Environment (Optional)
-        run: |
-          echo "Checking directory structure..."
-          ls -R src/asistente_agenda/
 
       - name: Run CrewAI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # Some Google SDK versions prefer this specific variable name
           GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
         run: python src/asistente_agenda/main.py run
