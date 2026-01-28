@@ -16,16 +16,11 @@ class AsistenteAgendaCrew:
     agents_config = os.path.join(base_path, 'config', 'agents.yaml')
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
-
     def __init__(self):
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash",
+            model="google_generative_ai/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY"),
-            temperature=0.5,
-            # This forces the underlying google-genai SDK to use v1
-            config={
-                "api_version": "v1"
-            }
+            temperature=0.5
         )
 
     @agent
