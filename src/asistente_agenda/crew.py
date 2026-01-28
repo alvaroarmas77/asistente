@@ -18,7 +18,7 @@ class AsistenteAgendaCrew:
 
     def __init__(self):
         self.shared_llm = LLM(
-            model="google_generative_ai/gemini-1.5-flash",
+            model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )
