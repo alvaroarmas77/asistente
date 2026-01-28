@@ -7,14 +7,12 @@ from microsoft_outlook_appointment_scheduling_assistant.tools.whatsapp_business_
 class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
     """MicrosoftOutlookAppointmentSchedulingAssistant crew"""
 
-    # We define the LLM once to keep the code DRY and avoid multiple initializations
-    def __init__(self):
-        self.shared_llm = LLM(
-            model="google/gemini-1.5-flash",
+    # We use a helper function instead of __init__ to avoid breaking the CrewBase
+    def gemini_llm(self):
+        return LLM(
+            model="gemini/gemini-1.5-flash", # Corrected prefix for Google AI Studio
             temperature=0.7,
-            max_rpm=2,
-            # Note: max_iter is usually an Agent parameter, not an LLM parameter.
-            # I have moved it to the Agent definitions below.
+            max_rpm=2
         )
 
     @agent
@@ -24,7 +22,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             tools=[],
             allow_delegation=False,
             max_iter=3,
-            llm=self.shared_llm,
+            llm=self.gemini_llm(),
             verbose=True
         )
 
@@ -32,12 +30,10 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
     def calendar_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["calendar_manager"],
-            # Apps are used in CrewAI Enterprise/Cloud; 
-            # for local/open-source, ensure these are supported tools.
             tools=[], 
             allow_delegation=False,
             max_iter=3,
-            llm=self.shared_llm,
+            llm=self.gemini_llm(),
             verbose=True
         )
 
@@ -48,7 +44,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             tools=[],
             allow_delegation=False,
             max_iter=3,
-            llm=self.shared_llm,
+            llm=self.gemini_llm(),
             verbose=True
         )
 
@@ -59,7 +55,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             tools=[WhatsAppBusinessMessenger()],
             allow_delegation=False,
             max_iter=3,
-            llm=self.shared_llm,
+            llm=self.gemini_llm(),
             verbose=True
         )
 
@@ -70,7 +66,7 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             tools=[],
             allow_delegation=False,
             max_iter=3,
-            llm=self.shared_llm,
+            llm=self.gemini_llm(),
             verbose=True
         )
 
@@ -112,5 +108,5 @@ class MicrosoftOutlookAppointmentSchedulingAssistantCrew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            memory=False # Prevents the OpenAI embedding error if you don't have an API key set
+            memory=False 
         )
