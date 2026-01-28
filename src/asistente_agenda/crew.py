@@ -5,6 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 @CrewBase
 class AsistenteAgendaCrew:
@@ -16,11 +17,10 @@ class AsistenteAgendaCrew:
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
     def __init__(self):
-        # Changed the model string to be more explicit for the Google provider
-        self.shared_llm = LLM(
-            model="google_generative_ai/gemini-1.5-flash",
-            api_key=os.getenv("GEMINI_API_KEY")
-        )
+    self.shared_llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        google_api_key=os.getenv("GEMINI_API_KEY")
+    )
 
     @agent
     def appointment_request_parser(self) -> Agent:
