@@ -6,10 +6,6 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
-# --- WHATSAPP TOOL IMPORT ---
-# Once you have your tool file ready, uncomment the line below:
-# from asistente_agenda.tools.whatsapp_tool import WhatsAppBusinessMessenger
-
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
@@ -20,9 +16,9 @@ class AsistenteAgendaCrew:
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
     def __init__(self):
-        # This was missing! It initializes the LLM for all agents.
+        # Changed the model string to be more explicit for the Google provider
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash",
+            model="google_generative_ai/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY")
         )
 
@@ -63,7 +59,6 @@ class AsistenteAgendaCrew:
     def whatsapp_reminder_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
-            # Keep tools empty until you have the class imported above
             tools=[], 
             inject_date=True,
             allow_delegation=False,
