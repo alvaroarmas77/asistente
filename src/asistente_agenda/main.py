@@ -9,17 +9,21 @@ try:
 except ImportError:
     from crew import AsistenteAgendaCrew
 
-# Ensure the Gemini Key is recognized if you use it in this file
-# os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
-
 def run():
     """
     Run the crew.
     """
+    # CRITICAL: Force the environment variable into the OS context 
+    # so the LLM class sees it immediately.
+    if not os.environ.get("GEMINI_API_KEY"):
+        os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY", "")
+
     inputs = {
         'Nombre': 'sample_value',
         'apellido': 'sample_value'
     }
+    
+    print("## Starting Asistente Agenda Crew...")
     AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
 
 def train():
@@ -53,7 +57,6 @@ def test():
         'apellido': 'sample_value'
     }
     try:
-        # Changed sys.argv indices because 'test' is sys.argv[1]
         AsistenteAgendaCrew().crew().test(n_iterations=int(sys.argv[2]), openai_model_name=sys.argv[3], inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while testing the crew: {e}")
