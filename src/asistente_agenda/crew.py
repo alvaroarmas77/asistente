@@ -195,7 +195,6 @@ class AsistenteAgendaCrew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            chat_llm=LLM(model="openai/gpt-4o-mini"),
+            chat_llm=LLM(model="gemini/gemini-1.5-flash"),
         )
-
 

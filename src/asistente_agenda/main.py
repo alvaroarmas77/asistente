@@ -76,3 +76,10 @@ if __name__ == "__main__":
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
+researcher = Agent(
+  role='Researcher',
+  goal='Gather data about...',
+  backstory='Expert analyst...',
+  max_iter=3,  # Stops the agent after 3 attempts if it gets stuck
+  allow_delegation=False
+)
