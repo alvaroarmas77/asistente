@@ -19,7 +19,7 @@ class AsistenteAgendaCrew:
 
     def __init__(self):
         self.shared_llm = LLM(
-            model="google/gemini-1.5-flash",
+            model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY"),
             temperature=0.5,
             # This forces the underlying google-genai SDK to use v1
