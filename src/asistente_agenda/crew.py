@@ -6,19 +6,21 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
-# If you have a custom WhatsApp tool, ensure it is imported correctly here
-# from asistente_agenda.tools.custom_tool import WhatsAppBusinessMessenger
+# --- WHATSAPP TOOL IMPORT ---
+# Once you have your tool file ready, uncomment the line below:
+# from asistente_agenda.tools.whatsapp_tool import WhatsAppBusinessMessenger
 
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
     
-    # These paths are relative to the location of THIS file
-    agents_config = 'config/agents.yaml'
-    tasks_config = 'config/tasks.yaml'
+    # Absolute path setup for GitHub Linux environment
+    base_path = os.path.dirname(os.path.realpath(__file__))
+    agents_config = os.path.join(base_path, 'config', 'agents.yaml')
+    tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
     def __init__(self):
-        # Changed name to shared_llm so it matches what your agents expect
+        # This was missing! It initializes the LLM for all agents.
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY")
@@ -43,7 +45,6 @@ class AsistenteAgendaCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=15,
-            # Note: ensure these tools are supported by your CrewAI version
             llm=self.shared_llm,
         )
 
@@ -62,7 +63,7 @@ class AsistenteAgendaCrew:
     def whatsapp_reminder_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
-            # If WhatsAppBusinessMessenger is not yet defined, leave tools=[] to test
+            # Keep tools empty until you have the class imported above
             tools=[], 
             inject_date=True,
             allow_delegation=False,
