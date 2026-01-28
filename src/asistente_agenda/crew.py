@@ -16,11 +16,12 @@ class AsistenteAgendaCrew:
     agents_config = os.path.join(base_path, 'config', 'agents.yaml')
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
-    def __init__(self):
-    self.shared_llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
-        google_api_key=os.getenv("GEMINI_API_KEY")
-    )
+  def __init__(self):
+        # This code MUST be here and MUST be indented
+        self.shared_llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",
+            google_api_key=os.getenv("GEMINI_API_KEY")
+        )
 
     @agent
     def appointment_request_parser(self) -> Agent:
