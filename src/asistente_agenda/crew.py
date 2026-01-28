@@ -16,10 +16,11 @@ class AsistenteAgendaCrew:
     agents_config = os.path.join(base_path, 'config', 'agents.yaml')
     tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
 
+
     def __init__(self):
-        # Change 'ChatGoogleGenerativeAI' to 'LLM'
         self.shared_llm = LLM(
-            model="google/gemini-1.5-flash",
+            # Adding '-latest' often bypasses the v1beta routing issue
+            model="google/gemini-1.5-flash-latest", 
             api_key=os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )
