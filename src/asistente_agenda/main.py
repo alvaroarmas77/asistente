@@ -1,15 +1,14 @@
 import sys
+import os
 
+# SQLite Fix for Cloud/Headless Environments
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-except ImportError:
+except (ImportError, KeyError):
     pass
-__import__('pysqlite3')
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 #!/usr/bin/env python
-import os
 try:
     from asistente_agenda.crew import AsistenteAgendaCrew
 except ImportError:
@@ -19,53 +18,37 @@ def run():
     """
     Run the crew.
     """
-    # CRITICAL: Force the environment variable into the OS context 
-    # so the LLM class sees it immediately.
-    if not os.environ.get("GEMINI_API_KEY"):
-        os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY", "")
+    # Ensure API Key is available to the environment
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("ERROR: GEMINI_API_KEY not found in environment.")
+        sys.exit(1)
+    
+    os.environ["GEMINI_API_KEY"] = api_key
 
+    # These inputs must match the placeholders in your tasks.yaml
     inputs = {
-        'Nombre': 'sample_value',
-        'apellido': 'sample_value'
+        'Nombre': 'Juan',
+        'apellido': 'Perez',
+        'solicitud de cita': 'Quiero una cita para mañana a las 3pm para una revisión técnica.'
     }
     
     print("## Starting Asistente Agenda Crew...")
     AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
 
 def train():
-    """
-    Train the crew for a given number of iterations.
-    """
-    inputs = {
-        'Nombre': 'sample_value',
-        'apellido': 'sample_value'
-    }
+    inputs = {'Nombre': 'sample', 'apellido': 'value', 'solicitud de cita': 'sample'}
     try:
         AsistenteAgendaCrew().crew().train(n_iterations=int(sys.argv[2]), filename=sys.argv[3], inputs=inputs)
     except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
-
-def replay():
-    """
-    Replay the crew execution from a specific task.
-    """
-    try:
-        AsistenteAgendaCrew().crew().replay(task_id=sys.argv[2])
-    except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
+        raise Exception(f"An error occurred while training: {e}")
 
 def test():
-    """
-    Test the crew execution and returns the results.
-    """
-    inputs = {
-        'Nombre': 'sample_value',
-        'apellido': 'sample_value'
-    }
+    inputs = {'Nombre': 'sample', 'apellido': 'value', 'solicitud de cita': 'sample'}
     try:
         AsistenteAgendaCrew().crew().test(n_iterations=int(sys.argv[2]), openai_model_name=sys.argv[3], inputs=inputs)
     except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")
+        raise Exception(f"An error occurred while testing: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -75,12 +58,5 @@ if __name__ == "__main__":
     command = sys.argv[1]
     if command == "run":
         run()
-    elif command == "train":
-        train()
-    elif command == "replay":
-        replay()
-    elif command == "test":
-        test()
-    else:
-        print(f"Unknown command: {command}")
-        sys.exit(1)
+    elif command in ["train", "test"]:
+        globals()[command]()

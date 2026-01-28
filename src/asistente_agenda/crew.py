@@ -1,26 +1,25 @@
 import os
 import sys
-__import__('pysqlite3')
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+# Maintain SQLite fix for agent workers
+try:
+    import pysqlite3
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+except (ImportError, KeyError):
+    pass
 
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-#from langchain_google_genai import ChatGoogleGenerativeAI
 
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
     
-    # Absolute path setup for GitHub Linux environment
-    base_path = os.path.dirname(os.path.realpath(__file__))
-    agents_config = os.path.join(base_path, 'config', 'agents.yaml')
-    tasks_config = os.path.join(base_path, 'config', 'tasks.yaml')
-
     def __init__(self):
+        # Cleaned up LLM initialization
         self.shared_llm = LLM(
-            model="custom/gemini-1.5-flash",
+            model="gemini/gemini-1.5-flash", 
             api_key=os.getenv("GEMINI_API_KEY"),
-            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             temperature=0.5
         )
 
@@ -106,6 +105,5 @@ class AsistenteAgendaCrew:
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
-            verbose=True,
-            manager_llm=self.shared_llm 
+            verbose=True
         )
