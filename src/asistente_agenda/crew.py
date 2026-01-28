@@ -6,19 +6,20 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
-# This helps find the YAML files correctly on GitHub
-base_path = os.path.dirname(__file__)
+# If you have a custom WhatsApp tool, ensure it is imported correctly here
+# from asistente_agenda.tools.custom_tool import WhatsAppBusinessMessenger
 
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
     
-    # Explicitly point to the YAML files
-    agents_config = os.path.join(base_path, 'config/agents.yaml')
-    tasks_config = os.path.join(base_path, 'config/tasks.yaml')
+    # These paths are relative to the location of THIS file
+    agents_config = 'config/agents.yaml'
+    tasks_config = 'config/tasks.yaml'
 
     def __init__(self):
-        self.gemini_llm = LLM(
+        # Changed name to shared_llm so it matches what your agents expect
+        self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY")
         )
@@ -30,7 +31,7 @@ class AsistenteAgendaCrew:
             tools=[],
             inject_date=True,
             allow_delegation=False,
-            max_iter=15, # Reduced slightly to prevent timeouts
+            max_iter=15,
             llm=self.shared_llm,
         )
 
@@ -42,11 +43,7 @@ class AsistenteAgendaCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=15,
-            # If using specialized Microsoft tools, ensure keys are in Secrets too
-            apps=[
-                "microsoft_outlook/get_calendar_events",
-                "microsoft_outlook/create_calendar_event",
-            ],
+            # Note: ensure these tools are supported by your CrewAI version
             llm=self.shared_llm,
         )
 
@@ -58,7 +55,6 @@ class AsistenteAgendaCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=15,
-            apps=["microsoft_outlook/send_email"],
             llm=self.shared_llm,
         )
 
@@ -66,7 +62,8 @@ class AsistenteAgendaCrew:
     def whatsapp_reminder_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
-            tools=[WhatsAppBusinessMessenger()],
+            # If WhatsAppBusinessMessenger is not yet defined, leave tools=[] to test
+            tools=[], 
             inject_date=True,
             allow_delegation=False,
             max_iter=15,
@@ -112,6 +109,5 @@ class AsistenteAgendaCrew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            # Adding the LLM here ensures the "Manager" or Chat also uses Gemini
             manager_llm=self.shared_llm 
         )
