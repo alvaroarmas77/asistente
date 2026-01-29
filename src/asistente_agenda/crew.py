@@ -21,7 +21,7 @@ class AsistenteAgendaCrew:
         # and avoids the 'v1beta' 404 error.
         self.shared_llm = LLM(
             model="google_ai/gemini-1.5-flash",
-            api_key=api_key,
+            api_key=os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )
 
