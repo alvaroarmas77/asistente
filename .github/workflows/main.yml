@@ -23,15 +23,26 @@ jobs:
           pip uninstall -y langchain-google-genai
           # Install our verified stack
           pip install crewai==0.100.1 litellm==1.59.8 google-generativeai pysqlite3-binary python-dotenv pyyaml
-          # This will show us the EXACT versions in the logs for debugging
+          # Verify versions
           pip freeze
-
 
       - name: Run CrewAI
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          # Force LiteLLM to stay local and not look for Cloud/Vertex credentials
           LITELLM_LOCAL_RESOURCES: "True"
           PYTHONPATH: ${{ github.workspace }}/src
-        run: python src/asistente_agenda/main.py
+        run: |
+          # --- DEBUG SECTION ---
+          echo "## Checking Environment Variables ##"
+          if [ -z "$GOOGLE_API_KEY" ]; then
+            echo "❌ ERROR: GOOGLE_API_KEY is EMPTY. Check GitHub Secrets!"
+            exit 1
+          else
+            echo "✅ GOOGLE_API_KEY is present."
+            # Show first 4 chars to confirm it's the right key (AIza...)
+            echo "Key starts with: ${GOOGLE_API_KEY:0:4}"
+          fi
+          # --- END DEBUG SECTION ---
+          
+          python src/asistente_agenda/main.py

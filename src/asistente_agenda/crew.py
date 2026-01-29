@@ -17,7 +17,7 @@ class AsistenteAgendaCrew:
         # We define the LLM clearly once. 
         # model="gemini/gemini-1.5-flash" (NO 'google/' prefix)
         self.shared_llm = LLM(
-            model="gemini-1.5-flash",
+            model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
             #custom_llm_provider="google_ai",
             api_version="v1",
