@@ -13,35 +13,40 @@ except (ImportError, KeyError):
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 def setup_environment():
+    """Configures environment to force Google AI Studio and bypass Vertex AI."""
     raw_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     
-    # 1. Standard API Key Setup
+    if not raw_key:
+        print("❌ ERROR: No API Key found in environment variables.")
+        return None
+
+    # Force the key into both standard variable names
     os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
     
-    # 2. THE FIX: Force LiteLLM to ignore Google Cloud/Vertex logic
+    # CRITICAL: Prevent LiteLLM from searching for Google Cloud / Vertex logic
     os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
     
-    # 3. Explicitly tell LiteLLM NOT to use Vertex AI
-    # This prevents it from looking for 'Default Credentials'
-    os.environ["VIRTUAL_ENV"] = "True" 
+    # Remove any project ID that might trick LiteLLM into thinking it's on Vertex AI
+    if "GOOGLE_CLOUD_PROJECT" in os.environ:
+        del os.environ["GOOGLE_CLOUD_PROJECT"]
     
     return raw_key
 
-
-
 def run():
-    setup_environment()
+    key = setup_environment()
+    if not key:
+        sys.exit(1)
     
-    # Simplified import to match the PYTHONPATH: src/
+    # Handling imports based on your structure
     try:
         from asistente_agenda.crew import AsistenteAgendaCrew
         import asistente_agenda.crew as crew_mod
-        print(f"DEBUG: Loading crew from: {crew_mod.__file__}")
     except ImportError:
         from crew import AsistenteAgendaCrew
         import crew as crew_mod
-        print(f"DEBUG: Loading crew from: {crew_mod.__file__}")
+
+    print(f"DEBUG: Loading crew from: {crew_mod.__file__}")
 
     inputs = {
         'Nombre': 'Juan',
@@ -55,11 +60,14 @@ def run():
     
     print("\n## Starting Asistente Agenda Crew...")
     
-    # Debug: Check the LLM config right before kickoff
-    crew_instance = AsistenteAgendaCrew()
-    print(f"DEBUG: Using model: {crew_instance.shared_llm.model}")
-    
     try:
+        # Initialize the crew
+        crew_instance = AsistenteAgendaCrew()
+        
+        # Verify the model name being sent to LiteLLM
+        print(f"DEBUG: Using model string: {crew_instance.shared_llm.model}")
+        
+        # Start the process
         crew_instance.crew().kickoff(inputs=inputs)
     except Exception as e:
         print(f"\n❌ Execution Error: {e}")

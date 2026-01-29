@@ -14,16 +14,16 @@ from crewai.project import CrewBase, agent, crew, task
 @CrewBase
 class AsistenteAgendaCrew:
     def __init__(self):
-        # We define the LLM clearly once. 
-        # model="gemini/gemini-1.5-flash" (NO 'google/' prefix)
+        # We define the LLM clearly once.
+        # Use 'gemini/gemini-1.5-flash' with explicit provider to avoid Vertex 404s
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
-            #custom_llm_provider="google_ai",
-            api_version="v1",
+            # FORCE the provider to Google AI Studio (not Vertex)
+            provider="google",
             temperature=0.5
         )
-
+        
     @agent
     def appointment_request_parser(self) -> Agent:
         return Agent(
@@ -71,6 +71,7 @@ class AsistenteAgendaCrew:
 
     @task
     def parse_appointment_request(self) -> Task:
+        # Note: Ensure these tasks use the agent's LLM automatically
         return Task(config=self.tasks_config["parse_appointment_request"])
 
     @task
