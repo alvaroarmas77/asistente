@@ -25,5 +25,5 @@ jobs:
       - name: Run CrewAI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }} 
         run: python src/asistente_agenda/main.py run

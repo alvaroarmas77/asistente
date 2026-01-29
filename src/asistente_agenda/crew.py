@@ -15,9 +15,11 @@ from crewai.project import CrewBase, agent, crew, task
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
     
-    def __init__(self):
+     def __init__(self):
+        # Explicitly using the model name without the provider prefix 
+        # for the native Google Gen AI driver.
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash", 
+            model="gemini-1.5-flash", 
             api_key=os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )
