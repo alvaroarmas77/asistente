@@ -14,20 +14,17 @@ from crewai.project import CrewBase, agent, crew, task
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
-    
 
-def __init__(self):
-        # Fallback logic for the API key
+    def __init__(self):
+        # Spacing: Indented 4 spaces to stay inside the class
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         
-        # We use 'gemini/' prefix which is the most stable for LiteLLM/CrewAI
-        # This prevents the library from guessing the API version incorrectly
+        # Using 'gemini/' prefix to resolve the 404 error from previous runs
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=api_key,
             temperature=0.5
         )
-
 
     @agent
     def appointment_request_parser(self) -> Agent:
