@@ -3,7 +3,7 @@ name: Execute Agenda Crew
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # This allows you to run it manually from the Actions tab
+  workflow_dispatch: 
 
 jobs:
   execute-crew:
@@ -19,20 +19,15 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install crewai[google-genai]
-          # Explicitly upgrade the google-genai package
-          pip install --upgrade google-genai
+          # Use a clean install. LiteLLM (included in crewai) will handle the Gemini routing.
+          pip install crewai pysqlite3-binary python-dotenv pyyaml
 
       - name: Run CrewAI
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          # This tells Python to look for modules inside the 'src' directory
           PYTHONPATH: ${{ github.workspace }}/src
         run: python src/asistente_agenda/main.py run
 
       - name: Save Result
         if: always()
-        run: |
-          # If your crew saves a file, you can upload it here
-          # For now, we'll just ensure we see the output in the log
-          echo "Crew execution completed."
+        run: echo "Crew execution completed."

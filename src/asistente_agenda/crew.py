@@ -16,10 +16,10 @@ class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
 
     def __init__(self):
-        # Spacing: Indented 4 spaces to stay inside the class
+        # Spacing: Indented 8 spaces to stay inside the __init__ method
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         
-        # Using 'gemini/' prefix to resolve the 404 error from previous runs
+        # The 'gemini/' prefix is MANDATORY to avoid the 404 error
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=api_key,

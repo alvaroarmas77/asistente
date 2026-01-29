@@ -9,17 +9,19 @@ try:
 except (ImportError, KeyError):
     pass
 
-def run():
-    # 1. Grab and standardize the API key
+def setup_environment():
+    # Standardize the API key for all libraries (CrewAI, LangChain, Google GenAI)
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
-        print("ERROR: No API Key found.")
+        print("ERROR: No API Key found in environment variables.")
         sys.exit(1)
     
     os.environ["GOOGLE_API_KEY"] = api_key
     os.environ["GEMINI_API_KEY"] = api_key
+
+def run():
+    setup_environment()
     
-    # 2. Local import to ensure environment is set
     try:
         from asistente_agenda.crew import AsistenteAgendaCrew
     except ImportError:
@@ -35,6 +37,7 @@ def run():
     AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
 
 def train():
+    setup_environment()
     from asistente_agenda.crew import AsistenteAgendaCrew
     inputs = {'Nombre': 'sample', 'apellido': 'value', 'solicitud de cita': 'sample'}
     try:
@@ -43,6 +46,7 @@ def train():
         raise Exception(f"An error occurred while training: {e}")
 
 def test():
+    setup_environment()
     from asistente_agenda.crew import AsistenteAgendaCrew
     inputs = {'Nombre': 'sample', 'apellido': 'value', 'solicitud de cita': 'sample'}
     try:
