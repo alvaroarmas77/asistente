@@ -1,5 +1,6 @@
-crewai>=0.100.0
-crewai-tools>=0.14.0
+crewai==0.100.1
+litellm==1.59.8
+google-generativeai
 pysqlite3-binary
 python-dotenv
 pyyaml

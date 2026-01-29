@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Includes google-generativeai to support the custom_llm_provider
+          # Explicitly installing google-generativeai to support the google_ai provider
           pip install crewai==0.100.1 litellm==1.59.8 google-generativeai pysqlite3-binary python-dotenv pyyaml
 
       - name: Run CrewAI
