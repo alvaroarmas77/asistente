@@ -22,6 +22,7 @@ def setup_environment():
     
     # Force LiteLLM by prioritizing GEMINI_API_KEY
     os.environ["GEMINI_API_KEY"] = raw_key
+    os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
     
     # Remove GOOGLE_API_KEY if present to prevent the Native SDK from auto-triggering
     if "GOOGLE_API_KEY" in os.environ:
