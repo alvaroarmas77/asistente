@@ -16,7 +16,7 @@ class AsistenteAgendaCrew:
     def __init__(self):
         # We use the GOOGLE_API_KEY environment variable specifically
         self.shared_llm = LLM(
-            model="google/gemini-1.5-flash",
+            model="gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
             custom_llm_provider="google_ai",
             api_version="v1",  # Hardcoded to avoid the v1beta 404 bug

@@ -21,6 +21,7 @@ def setup_environment():
     # Crucial for the 'google_ai' provider and to stop VertexAI detection
     os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
+    ###
     os.environ["LITELLM_LOCAL_RESOURCES"] = "True" 
     
     return raw_key
