@@ -18,12 +18,16 @@ def run():
     """
     Run the crew.
     """
-    # Ensure API Key is available to the environment
-    api_key = os.getenv("GEMINI_API_KEY")
+    # FLEXIBLE FIX: Check for both possible key names
+    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    
     if not api_key:
-        print("ERROR: GEMINI_API_KEY not found in environment.")
+        print("ERROR: Neither GOOGLE_API_KEY nor GEMINI_API_KEY found in environment.")
+        print("Please ensure you have set the secret in GitHub Settings.")
         sys.exit(1)
     
+    # Standardize both names in the environment so all libraries can find it
+    os.environ["GOOGLE_API_KEY"] = api_key
     os.environ["GEMINI_API_KEY"] = api_key
 
     # These inputs must match the placeholders in your tasks.yaml
@@ -59,4 +63,8 @@ if __name__ == "__main__":
     if command == "run":
         run()
     elif command in ["train", "test"]:
+        # Safety check for arguments during train/test
+        if len(sys.argv) < 4:
+            print("Usage: main.py train <iterations> <filename>")
+            sys.exit(1)
         globals()[command]()
