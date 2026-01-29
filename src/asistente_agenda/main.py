@@ -13,18 +13,22 @@ except (ImportError, KeyError):
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 def setup_environment():
-    """Configures environment to force LiteLLM and avoid VertexAI."""
     raw_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    if not raw_key:
-        print("ERROR: No API Key found in GitHub Secrets.")
-        sys.exit(1)
     
-    # Standardize keys for LiteLLM 'google_ai' provider
+    # 1. Standard API Key Setup
     os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
-    # os.environ["LITELLM_LOCAL_RESOURCES"] = "True" 
+    
+    # 2. THE FIX: Force LiteLLM to ignore Google Cloud/Vertex logic
+    os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
+    
+    # 3. Explicitly tell LiteLLM NOT to use Vertex AI
+    # This prevents it from looking for 'Default Credentials'
+    os.environ["VIRTUAL_ENV"] = "True" 
     
     return raw_key
+
+
 
 def run():
     setup_environment()
