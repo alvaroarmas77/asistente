@@ -5,8 +5,8 @@ description = "asistente_agenda using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[tools]>=0.100.0",
-    "langchain-google-genai>=2.0.0",
+    "crewai==0.100.1",
+    "litellm==1.59.8",
     "google-generativeai>=0.8.0",
     "pysqlite3-binary",
     "python-dotenv",
@@ -16,9 +16,6 @@ dependencies = [
 [project.scripts]
 asistente_agenda = "asistente_agenda.main:run"
 run_crew = "asistente_agenda.main:run"
-train = "asistente_agenda.main:train"
-replay = "asistente_agenda.main:replay"
-test = "asistente_agenda.main:test"
 
 [build-system]
 requires = ["hatchling"]

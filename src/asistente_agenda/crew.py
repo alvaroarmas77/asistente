@@ -15,11 +15,11 @@ from crewai.project import CrewBase, agent, crew, task
 class AsistenteAgendaCrew:
     def __init__(self):
         # We define the LLM clearly once. 
-        # model="gemini-1.5-flash" (NO 'google/' prefix)
+        # model="gemini/gemini-1.5-flash" (NO 'google/' prefix)
         self.shared_llm = LLM(
             model="gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
-            custom_llm_provider="google_ai",
+            #custom_llm_provider="google_ai",
             api_version="v1",
             temperature=0.5
         )

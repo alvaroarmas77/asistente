@@ -22,7 +22,7 @@ def setup_environment():
     # Standardize keys for LiteLLM 'google_ai' provider
     os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
-    os.environ["LITELLM_LOCAL_RESOURCES"] = "True" 
+    # os.environ["LITELLM_LOCAL_RESOURCES"] = "True" 
     
     return raw_key
 
