@@ -18,7 +18,7 @@ class AsistenteAgendaCrew:
 
     def __init__(self):
         # Using the full model path to ensure the SDK finds it
-          api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash", # Back to this, or try "models/gemini-1.5-flash"
