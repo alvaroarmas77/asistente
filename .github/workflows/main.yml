@@ -24,6 +24,7 @@ jobs:
 
       - name: Run CrewAI
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }} 
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          # This tells Python to look for modules inside the 'src' directory
+          PYTHONPATH: ${{ github.workspace }}/src
         run: python src/asistente_agenda/main.py run
