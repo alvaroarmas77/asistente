@@ -1,7 +1,7 @@
 import os
 import sys
 
-# Maintain SQLite fix for agent workers
+# Maintain SQLite fix
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
@@ -13,15 +13,14 @@ from crewai.project import CrewBase, agent, crew, task
 
 @CrewBase
 class AsistenteAgendaCrew:
-    """AsistenteAgenda crew"""
-
     def __init__(self):
-        # Spacing: Indented 8 spaces to stay inside the __init__ method
-        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        # We fetch the key, but we don't pass it directly here to avoid conflict
+        api_key = os.getenv("GEMINI_API_KEY")
         
-        # The 'gemini/' prefix is MANDATORY to avoid the 404 error
+        # THE FIX: Using 'google_ai/' forces the stable LiteLLM path
+        # and avoids the 'v1beta' 404 error.
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash",
+            model="google_ai/gemini-1.5-flash",
             api_key=api_key,
             temperature=0.5
         )
@@ -30,55 +29,47 @@ class AsistenteAgendaCrew:
     def appointment_request_parser(self) -> Agent:
         return Agent(
             config=self.agents_config["appointment_request_parser"],
-            tools=[],
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=15,
             llm=self.shared_llm,
+            allow_delegation=False,
+            verbose=True
         )
 
+    # ... (Repeat the same for other agents, ensuring they all use self.shared_llm)
+    
     @agent
     def calendar_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["calendar_manager"],
-            tools=[],
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=15,
             llm=self.shared_llm,
+            allow_delegation=False,
+            verbose=True
         )
 
     @agent
     def email_confirmation_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["email_confirmation_specialist"],
-            tools=[],
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=15,
             llm=self.shared_llm,
+            allow_delegation=False,
+            verbose=True
         )
 
     @agent
     def whatsapp_reminder_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
-            tools=[], 
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=15,
             llm=self.shared_llm,
+            allow_delegation=False,
+            verbose=True
         )
 
     @agent
     def summary_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["summary_specialist"],
-            tools=[],
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=15,
             llm=self.shared_llm,
+            allow_delegation=False,
+            verbose=True
         )
 
     @task
@@ -103,7 +94,6 @@ class AsistenteAgendaCrew:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the AsistenteAgenda crew"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
