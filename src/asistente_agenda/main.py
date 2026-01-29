@@ -3,43 +3,36 @@ import sys
 import os
 import warnings
 
-# 1. SQLite Fix (Mandatory for GitHub Actions/ChromaDB)
+# 1. SQLite Fix
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 except (ImportError, KeyError):
     pass
 
-# Suppress minor warnings for cleaner logs
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 def setup_environment():
-    """Configures environment to force LiteLLM and avoid the buggy Native SDK."""
     raw_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not raw_key:
         print("ERROR: No API Key found in GitHub Secrets.")
         sys.exit(1)
     
-    # Force LiteLLM by prioritizing GEMINI_API_KEY
+    # Crucial for the 'google_ai' provider and to stop VertexAI detection
+    os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
-    os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
-    
-    # Remove GOOGLE_API_KEY if present to prevent the Native SDK from auto-triggering
-    if "GOOGLE_API_KEY" in os.environ:
-        del os.environ["GOOGLE_API_KEY"]
+    os.environ["LITELLM_LOCAL_RESOURCES"] = "True" 
     
     return raw_key
 
 def run():
     setup_environment()
     
-    # Import inside run to ensure SQLite fix is applied first
     try:
         from asistente_agenda.crew import AsistenteAgendaCrew
     except ImportError:
         from crew import AsistenteAgendaCrew
 
-    # THE FIX: Providing all variables required by your tasks.yaml placeholders
     inputs = {
         'Nombre': 'Juan',
         'apellido': 'Perez',
@@ -51,7 +44,6 @@ def run():
     }
     
     print("\n## Starting Asistente Agenda Crew...")
-    print("## Environment: LiteLLM Bridge Forced (Safe Mode)\n")
     
     try:
         AsistenteAgendaCrew().crew().kickoff(inputs=inputs)

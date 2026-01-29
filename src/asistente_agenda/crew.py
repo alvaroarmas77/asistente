@@ -14,15 +14,12 @@ from crewai.project import CrewBase, agent, crew, task
 @CrewBase
 class AsistenteAgendaCrew:
     def __init__(self):
-        # We fetch the key, but we don't pass it directly here to avoid conflict
-        api_key = os.getenv("GEMINI_API_KEY")
-        
-        # THE FIX: Using 'google_ai/' forces the stable LiteLLM path
-        # and avoids the 'v1beta' 404 error.
+        # We use the GOOGLE_API_KEY environment variable specifically
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash",
-            api_key=os.getenv("GEMINI_API_KEY"),
-            base_url="https://generativelanguage.googleapis.com/v1",
+            model="google/gemini-1.5-flash",
+            api_key=os.getenv("GOOGLE_API_KEY"),
+            custom_llm_provider="google_ai",
+            api_version="v1",  # Hardcoded to avoid the v1beta 404 bug
             temperature=0.5
         )
 
@@ -35,8 +32,6 @@ class AsistenteAgendaCrew:
             verbose=True
         )
 
-    # ... (Repeat the same for other agents, ensuring they all use self.shared_llm)
-    
     @agent
     def calendar_manager(self) -> Agent:
         return Agent(
