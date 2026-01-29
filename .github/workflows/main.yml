@@ -21,7 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           # We install the core and the bridge. 
           # We avoid the 'google-genai' extra to stay away from the buggy SDK.
-          pip install crewai==0.100.1 litellm==1.59.1 pysqlite3-binary python-dotenv pyyaml
+          pip install crewai==0.100.1 litellm==1.59.8 pysqlite3-binary python-dotenv pyyaml
 
       - name: Run CrewAI
         env:
