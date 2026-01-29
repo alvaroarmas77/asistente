@@ -13,15 +13,15 @@ except (ImportError, KeyError):
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 def setup_environment():
+    """Configures environment to force LiteLLM and avoid VertexAI."""
     raw_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not raw_key:
         print("ERROR: No API Key found in GitHub Secrets.")
         sys.exit(1)
     
-    # Crucial for the 'google_ai' provider and to stop VertexAI detection
+    # Standardize keys for LiteLLM 'google_ai' provider
     os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
-    ###
     os.environ["LITELLM_LOCAL_RESOURCES"] = "True" 
     
     return raw_key
@@ -29,10 +29,15 @@ def setup_environment():
 def run():
     setup_environment()
     
+    # Simplified import to match the PYTHONPATH: src/
     try:
         from asistente_agenda.crew import AsistenteAgendaCrew
+        import asistente_agenda.crew as crew_mod
+        print(f"DEBUG: Loading crew from: {crew_mod.__file__}")
     except ImportError:
         from crew import AsistenteAgendaCrew
+        import crew as crew_mod
+        print(f"DEBUG: Loading crew from: {crew_mod.__file__}")
 
     inputs = {
         'Nombre': 'Juan',
@@ -46,8 +51,12 @@ def run():
     
     print("\n## Starting Asistente Agenda Crew...")
     
+    # Debug: Check the LLM config right before kickoff
+    crew_instance = AsistenteAgendaCrew()
+    print(f"DEBUG: Using model: {crew_instance.shared_llm.model}")
+    
     try:
-        AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
+        crew_instance.crew().kickoff(inputs=inputs)
     except Exception as e:
         print(f"\n❌ Execution Error: {e}")
         sys.exit(1)

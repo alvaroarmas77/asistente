@@ -1,7 +1,7 @@
 import os
 import sys
 
-# Maintain SQLite fix
+# 1. Maintain SQLite fix
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
@@ -14,12 +14,13 @@ from crewai.project import CrewBase, agent, crew, task
 @CrewBase
 class AsistenteAgendaCrew:
     def __init__(self):
-        # We use the GOOGLE_API_KEY environment variable specifically
+        # We define the LLM clearly once. 
+        # model="gemini-1.5-flash" (NO 'google/' prefix)
         self.shared_llm = LLM(
             model="gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
             custom_llm_provider="google_ai",
-            api_version="v1",  # Hardcoded to avoid the v1beta 404 bug
+            api_version="v1",
             temperature=0.5
         )
 
