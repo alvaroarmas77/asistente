@@ -16,15 +16,18 @@ class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
     
 
-    def __init__(self):
-        # Using the full model path to ensure the SDK finds it
+def __init__(self):
+        # Fallback logic for the API key
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    
+        
+        # We use 'gemini/' prefix which is the most stable for LiteLLM/CrewAI
+        # This prevents the library from guessing the API version incorrectly
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash", # Back to this, or try "models/gemini-1.5-flash"
+            model="gemini/gemini-1.5-flash",
             api_key=api_key,
             temperature=0.5
-    )
+        )
+
 
     @agent
     def appointment_request_parser(self) -> Agent:

@@ -15,28 +15,35 @@ except ImportError:
     from crew import AsistenteAgendaCrew
 
 def run():
-    """
-    Run the crew.
-    """
-    # FLEXIBLE FIX: Check for both possible key names
+    # 1. Grab the key
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     
     if not api_key:
-        print("ERROR: Neither GOOGLE_API_KEY nor GEMINI_API_KEY found in environment.")
-        print("Please ensure you have set the secret in GitHub Settings.")
+        print("ERROR: No API Key found.")
         sys.exit(1)
     
-    # Standardize both names in the environment so all libraries can find it
+    # 2. Force-inject into environment for all sub-libraries
     os.environ["GOOGLE_API_KEY"] = api_key
     os.environ["GEMINI_API_KEY"] = api_key
+    
+    # 3. Import and execute
+    try:
+        from asistente_agenda.crew import AsistenteAgendaCrew
+    except ImportError:
+        from crew import AsistenteAgendaCrew
 
-    # These inputs must match the placeholders in your tasks.yaml
     inputs = {
         'Nombre': 'Juan',
         'apellido': 'Perez',
         'solicitud de cita': 'Quiero una cita para mañana a las 3pm para una revisión técnica.'
     }
     
+    AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
+
+
+
+
+
     print("## Starting Asistente Agenda Crew...")
     AsistenteAgendaCrew().crew().kickoff(inputs=inputs)
 
