@@ -20,7 +20,7 @@ class AsistenteAgendaCrew:
         # THE FIX: Using 'google_ai/' forces the stable LiteLLM path
         # and avoids the 'v1beta' 404 error.
         self.shared_llm = LLM(
-            model="google_ai/gemini-1.5-flash",
+            model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )
