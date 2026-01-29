@@ -28,3 +28,10 @@ jobs:
           # This tells Python to look for modules inside the 'src' directory
           PYTHONPATH: ${{ github.workspace }}/src
         run: python src/asistente_agenda/main.py run
+
+      - name: Save Result
+        if: always()
+        run: |
+          # If your crew saves a file, you can upload it here
+          # For now, we'll just ensure we see the output in the log
+          echo "Crew execution completed."
