@@ -15,14 +15,16 @@ from crewai.project import CrewBase, agent, crew, task
 class AsistenteAgendaCrew:
     """AsistenteAgenda crew"""
     
+
     def __init__(self):
-        # Explicitly using the model name without the provider prefix 
-        # for the native Google Gen AI driver.
+        # Using the full model path to ensure the SDK finds it
+          api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    
         self.shared_llm = LLM(
-            model="gemini-1.5-flash", 
-            api_key=os.getenv("GEMINI_API_KEY"),
+            model="gemini/gemini-1.5-flash", # Back to this, or try "models/gemini-1.5-flash"
+            api_key=api_key,
             temperature=0.5
-        )
+    )
 
     @agent
     def appointment_request_parser(self) -> Agent:

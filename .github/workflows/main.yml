@@ -19,8 +19,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Added "crewai[google-genai]" to fix the missing native provider error
-          pip install "crewai[google-genai]" litellm google-generativeai pysqlite3-binary fastapi uvicorn apscheduler
+          pip install crewai[google-genai]
+          # Explicitly upgrade the google-genai package
+          pip install --upgrade google-genai
 
       - name: Run CrewAI
         env:
