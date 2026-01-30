@@ -12,10 +12,25 @@ except (ImportError, KeyError):
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
-# Import your custom tools
-# Note: Adjust these import paths if your folder structure is different
-from asistente_agenda.tools.whatspp_business_messenger import WhatsAppBusinessMessenger
-from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
+# --- SMART IMPORT FIX ---
+# This block handles imports whether running locally or in GitHub Actions
+try:
+    # Attempt absolute imports first (Standard for CrewAI projects)
+    from asistente_agenda.tools.whatspp_business_messenger import WhatsAppBusinessMessenger
+    from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
+    from asistente_agenda.tools.custom_tool import MyCustomTool
+except ImportError:
+    try:
+        # Fallback to relative imports if the runner is inside the package folder
+        from tools.whatspp_business_messenger import WhatsAppBusinessMessenger
+        from tools.outlook_calendar_tool import OutlookCalendarTool
+        from tools.custom_tool import MyCustomTool
+    except ImportError as e:
+        print(f"❌ Critical Tool Import Error: {e}")
+        # We define placeholders to prevent immediate crash if imports fail during discovery
+        WhatsAppBusinessMessenger = None
+        OutlookCalendarTool = None
+        MyCustomTool = None
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
@@ -48,7 +63,7 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["calendar_manager"],
             llm=self.shared_llm,
-            tools=[OutlookCalendarTool()],  # Crucial Tool Integration
+            tools=[OutlookCalendarTool()] if OutlookCalendarTool else [],
             allow_delegation=False,
             verbose=True
         )
@@ -58,7 +73,6 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["email_confirmation_specialist"],
             llm=self.shared_llm,
-            # If you add an Email tool later, it would go here
             allow_delegation=False,
             verbose=True
         )
@@ -68,7 +82,8 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
             llm=self.shared_llm,
-            tools=[WhatsAppBusinessMessenger(), MyCustomTool()],  # Crucial Tool Integration
+            # Integrated both tools here
+            tools=[t for t in [WhatsAppBusinessMessenger(), MyCustomTool()] if t],
             allow_delegation=False,
             verbose=True
         )
