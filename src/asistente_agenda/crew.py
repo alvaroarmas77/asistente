@@ -12,25 +12,24 @@ except (ImportError, KeyError):
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
-# --- SMART IMPORT FIX ---
-# This block handles imports whether running locally or in GitHub Actions
+# --- FINAL IMPORT STRATEGY ---
+# We use direct imports because main.py will now inject the correct folder into sys.path
 try:
-    # Attempt absolute imports first (Standard for CrewAI projects)
-    from asistente_agenda.tools.whatspp_business_messenger import WhatsAppBusinessMessenger
-    from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
-    from asistente_agenda.tools.custom_tool import MyCustomTool
+    from tools.whatspp_business_messenger import WhatsAppBusinessMessenger
+    from tools.outlook_calendar_tool import OutlookCalendarTool
+    from tools.custom_tool import MyCustomTool
 except ImportError:
+    # This acts as a backup for local development environments
     try:
-        # Fallback to relative imports if the runner is inside the package folder
-        from tools.whatspp_business_messenger import WhatsAppBusinessMessenger
-        from tools.outlook_calendar_tool import OutlookCalendarTool
-        from tools.custom_tool import MyCustomTool
+        from asistente_agenda.tools.whatspp_business_messenger import WhatsAppBusinessMessenger
+        from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
+        from asistente_agenda.tools.custom_tool import MyCustomTool
     except ImportError as e:
-        print(f"❌ Critical Tool Import Error: {e}")
-        # We define placeholders to prevent immediate crash if imports fail during discovery
-        WhatsAppBusinessMessenger = None
-        OutlookCalendarTool = None
-        MyCustomTool = None
+        print(f"❌ Tool Import Error: {e}")
+        # Placeholder classes to prevent 'NoneType' errors during Agent initialization
+        class WhatsAppBusinessMessenger: pass
+        class OutlookCalendarTool: pass
+        class MyCustomTool: pass
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
@@ -43,7 +42,7 @@ class AsistenteAgendaCrew:
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
-            provider="google",  # Explicitly use the 'google' provider bridge
+            provider="google",
             temperature=0.5
         )
 
@@ -63,7 +62,7 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["calendar_manager"],
             llm=self.shared_llm,
-            tools=[OutlookCalendarTool()] if OutlookCalendarTool else [],
+            tools=[OutlookCalendarTool()],
             allow_delegation=False,
             verbose=True
         )
@@ -82,8 +81,8 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
             llm=self.shared_llm,
-            # Integrated both tools here
-            tools=[t for t in [WhatsAppBusinessMessenger(), MyCustomTool()] if t],
+            # Initializing tools safely
+            tools=[WhatsAppBusinessMessenger(), MyCustomTool()],
             allow_delegation=False,
             verbose=True
         )
@@ -123,7 +122,6 @@ class AsistenteAgendaCrew:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the AsistenteAgenda crew"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
