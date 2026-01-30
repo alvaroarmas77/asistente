@@ -41,13 +41,22 @@ def run():
     if not key:
         sys.exit(1)
     
-    # Import logic
+    # --- ENHANCED IMPORT LOGIC ---
+    # This ensures tools inside crew.py are found correctly by adding the current path to sys.path
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    if current_dir not in sys.path:
+        sys.path.append(current_dir)
+
     try:
         from asistente_agenda.crew import AsistenteAgendaCrew
         import asistente_agenda.crew as crew_mod
     except ImportError:
-        from crew import AsistenteAgendaCrew
-        import crew as crew_mod
+        try:
+            from crew import AsistenteAgendaCrew
+            import crew as crew_mod
+        except ImportError as e:
+            print(f"❌ Critical Import Error: {e}")
+            sys.exit(1)
 
     print(f"DEBUG: Loading crew from: {crew_mod.__file__}")
 
@@ -67,14 +76,13 @@ def run():
         # Initialize the crew
         crew_instance = AsistenteAgendaCrew()
         
-        # Verify the model name
+        # Verify the model name (from our crew.py fix)
         print(f"DEBUG: Using model string: {crew_instance.shared_llm.model}")
         
         # Start the process
         crew_instance.crew().kickoff(inputs=inputs)
     except Exception as e:
         print(f"\n❌ Execution Error: {e}")
-        # Detailed LiteLLM logging is already handled by their internal catch
         sys.exit(1)
 
 if __name__ == "__main__":
