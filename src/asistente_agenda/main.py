@@ -3,7 +3,7 @@ import sys
 import os
 import warnings
 
-# 1. SQLite Fix
+# 1. SQLite Fix for environments without modern sqlite3
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
@@ -24,12 +24,15 @@ def setup_environment():
     os.environ["GOOGLE_API_KEY"] = raw_key
     os.environ["GEMINI_API_KEY"] = raw_key
     
-    # CRITICAL: Prevent LiteLLM from searching for Google Cloud / Vertex logic
+    # CRITICAL: Prevent LiteLLM from searching for Google Cloud / Vertex credentials
     os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
     
-    # Remove any project ID that might trick LiteLLM into thinking it's on Vertex AI
-    if "GOOGLE_CLOUD_PROJECT" in os.environ:
-        del os.environ["GOOGLE_CLOUD_PROJECT"]
+    # Remove any project ID or credentials path that might trigger Vertex logic
+    os.environ.pop("GOOGLE_CLOUD_PROJECT", None)
+    os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
+    
+    # Force LiteLLM to use the standard Google AI Studio base URL if it's confused
+    os.environ["VIRTUAL_ENV"] = "True" 
     
     return raw_key
 
@@ -38,7 +41,7 @@ def run():
     if not key:
         sys.exit(1)
     
-    # Handling imports based on your structure
+    # Import logic
     try:
         from asistente_agenda.crew import AsistenteAgendaCrew
         import asistente_agenda.crew as crew_mod
@@ -64,13 +67,14 @@ def run():
         # Initialize the crew
         crew_instance = AsistenteAgendaCrew()
         
-        # Verify the model name being sent to LiteLLM
+        # Verify the model name
         print(f"DEBUG: Using model string: {crew_instance.shared_llm.model}")
         
         # Start the process
         crew_instance.crew().kickoff(inputs=inputs)
     except Exception as e:
         print(f"\n❌ Execution Error: {e}")
+        # Detailed LiteLLM logging is already handled by their internal catch
         sys.exit(1)
 
 if __name__ == "__main__":
