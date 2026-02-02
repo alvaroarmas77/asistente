@@ -19,11 +19,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Force remove any pre-installed conflicting bridges
           pip uninstall -y langchain-google-genai
-          # Install our verified stack
           pip install crewai==0.100.1 litellm==1.59.8 google-generativeai pysqlite3-binary python-dotenv pyyaml
-          # Verify versions
           pip freeze
 
       - name: Run CrewAI
@@ -33,16 +30,12 @@ jobs:
           LITELLM_LOCAL_RESOURCES: "True"
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
-          # --- DEBUG SECTION ---
           echo "## Checking Environment Variables ##"
           if [ -z "$GOOGLE_API_KEY" ]; then
             echo "❌ ERROR: GOOGLE_API_KEY is EMPTY. Check GitHub Secrets!"
             exit 1
           else
             echo "✅ GOOGLE_API_KEY is present."
-            # Show first 4 chars to confirm it's the right key (AIza...)
             echo "Key starts with: ${GOOGLE_API_KEY:0:4}"
           fi
-          # --- END DEBUG SECTION ---
-          
           python src/asistente_agenda/main.py
