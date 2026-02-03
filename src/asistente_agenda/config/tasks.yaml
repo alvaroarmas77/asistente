@@ -47,4 +47,8 @@ complete_appointment_setup:
   agent: summary_specialist
   context:
     - send_email_confirmation
+<<<<<<< HEAD
     - schedule_whatsapp_reminders
+=======
+    - schedule_whatsapp_reminders
+>>>>>>> 4a5b718517196c0da941af59262a455522dad0de
