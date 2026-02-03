@@ -1,8 +1,9 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import sys
 import warnings
 
-# 1. SQLite Fix for GitHub Actions environment
+# 1. SQLite Fix
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
@@ -11,25 +12,33 @@ except (ImportError, KeyError):
 
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
+from crewai.tools import BaseTool
 
-# --- FINAL IMPORT STRATEGY ---
-# We use direct imports because main.py will now inject the correct folder into sys.path
+# --- FIXED IMPORT STRATEGY ---
 try:
-    from tools.whatspp_business_messenger import WhatsAppBusinessMessenger
-    from tools.outlook_calendar_tool import OutlookCalendarTool
-    from tools.custom_tool import MyCustomTool
+    from asistente_agenda.tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
+    from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
+    from asistente_agenda.tools.custom_tool import MyCustomTool
 except ImportError:
-    # This acts as a backup for local development environments
     try:
-        from asistente_agenda.tools.whatspp_business_messenger import WhatsAppBusinessMessenger
-        from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
-        from asistente_agenda.tools.custom_tool import MyCustomTool
+        from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
+        from tools.outlook_calendar_tool import OutlookCalendarTool
+        from tools.custom_tool import MyCustomTool
     except ImportError as e:
-        print(f"❌ Tool Import Error: {e}")
-        # Placeholder classes to prevent 'NoneType' errors during Agent initialization
-        class WhatsAppBusinessMessenger: pass
-        class OutlookCalendarTool: pass
-        class MyCustomTool: pass
+        print(f"⚠️ Tool Import Warning: {e}. Using placeholders.")
+        from crewai.tools import BaseTool
+        class WhatsAppBusinessMessenger(BaseTool):
+            name: str = "WhatsApp Placeholder"
+            description: str = "Tool unavailable"
+            def _run(self, **kwargs): return "WhatsApp tool not available."
+        class OutlookCalendarTool(BaseTool):
+            name: str = "Outlook Placeholder"
+            description: str = "Tool unavailable"
+            def _run(self, **kwargs): return "Outlook tool not available."
+        class MyCustomTool(BaseTool):
+            name: str = "Custom Placeholder"
+            description: str = "Tool unavailable"
+            def _run(self, **kwargs): return "Custom tool not available."
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
@@ -37,16 +46,20 @@ warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 class AsistenteAgendaCrew:
     """AsistenteAgendaCrew crew for managing appointment scheduling and notifications"""
 
+    # ✅ PATHING CHECK: Defining the config paths
+    agents_config = 'config/agents.yaml'
+    tasks_config = 'config/tasks.yaml'
+
     def __init__(self):
-        # 2. LLM Configuration: Forcing Google AI Studio to avoid Vertex 404s
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            print("❌ ERROR: No API Key found in GOOGLE_API_KEY or GEMINI_API_KEY")
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
-            api_key=os.getenv("GOOGLE_API_KEY"),
-            provider="google",
+            google_api_key=api_key,
+            provider="google_ai", # <--- ADD THIS LINE
             temperature=0.5
         )
-
-    # --- Agents Section ---
 
     @agent
     def appointment_request_parser(self) -> Agent:
@@ -81,7 +94,6 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
             llm=self.shared_llm,
-            # Initializing tools safely
             tools=[WhatsAppBusinessMessenger(), MyCustomTool()],
             allow_delegation=False,
             verbose=True
@@ -95,8 +107,6 @@ class AsistenteAgendaCrew:
             allow_delegation=False,
             verbose=True
         )
-
-    # --- Tasks Section ---
 
     @task
     def parse_appointment_request(self) -> Task:
@@ -117,8 +127,6 @@ class AsistenteAgendaCrew:
     @task
     def complete_appointment_setup(self) -> Task:
         return Task(config=self.tasks_config["complete_appointment_setup"])
-
-    # --- Crew Orchestration ---
 
     @crew
     def crew(self) -> Crew:
