@@ -1,6 +1,7 @@
 crewai==0.100.1
 litellm==1.59.8
 google-generativeai
+langchain-google-genai
 pysqlite3-binary
 python-dotenv
 pyyaml
