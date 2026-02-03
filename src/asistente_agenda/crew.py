@@ -49,7 +49,8 @@ warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 @CrewBase
 class AsistenteAgendaCrew:
     """AsistenteAgendaCrew crew for managing appointment scheduling and notifications"""
-
+    agents_config = 'config/agents.yaml'
+    tasks_config = 'config/tasks.yaml'
     def __init__(self):
         # 2. LLM Configuration: Using Google AI Studio (Gemini)
         # Note: Ensure GOOGLE_API_KEY is set in GitHub Secrets and CrewAI Settings
