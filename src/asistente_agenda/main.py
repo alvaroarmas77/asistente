@@ -26,7 +26,7 @@ def setup_environment():
     os.environ["GOOGLE_AI_STUDIO_API_KEY"] = str(raw_key) if raw_key else ""
     
     # Force the API Base to Google AI Studio
-    os.environ["GEMINI_API_BASE"] = "https://generativelanguage.googleapis.com/v1beta"
+    os.environ.pop("GEMINI_API_BASE", None)
     
     # Disable LiteLLM's automatic attempt to use local Google Cloud credentials
     os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
