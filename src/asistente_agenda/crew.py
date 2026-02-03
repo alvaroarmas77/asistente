@@ -15,7 +15,7 @@ from crewai.project import CrewBase, agent, crew, task
 # --- FINAL IMPORT STRATEGY ---
 # We use direct imports because main.py will now inject the correct folder into sys.path
 try:
-    from tools.whatspp_business_messenger import WhatsAppBusinessMessenger
+    from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
     from tools.outlook_calendar_tool import OutlookCalendarTool
     from tools.custom_tool import MyCustomTool
 except ImportError:
