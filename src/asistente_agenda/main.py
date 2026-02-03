@@ -44,7 +44,7 @@ def run():
 
     inputs = {
         'Nombre': 'Juan', 'apellido': 'Perez',
-        'solicitud de cita': 'Quiero una cita para mañana a las 3pm para una revisión técnica.',
+        'appointment_request': 'Quiero una cita para mañana a las 3pm para una revisión técnica.',
         'Correo electrónico': 'juan.perez@example.com',
         'número de WhatsApp': '+51999888777',
         'fecha y duración de la cita': 'Mañana a las 15:00 (1 hora)',
