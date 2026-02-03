@@ -1,70 +1,50 @@
----
 parse_appointment_request:
-  description: 'Analice la solicitud de cita en lenguaje natural: "{solicitud de cita}".
-    Extraiga y estructure todos los datos relevantes, incluyendo: {Nombre} y  {apellido},
-    {Correo electrónico},  {número de WhatsApp}, {fecha y duración de la cita}, y
-    {propósito de la cita}. Gestione referencias horarias relativas y conviértalas
-    en fechas y horas específicas.'
-  expected_output: 'Un formato JSON estructurado que contiene: fecha, hora de inicio,
-    hora de finalización, duración, asistentes (con nombres, correos electrónicos
-    y números de teléfono), asunto, descripción, ubicación y cualquier nota especial.
-    Incluya la información de la zona horaria y asegúrese de que todas las fechas
-    estén en el formato ISO correcto.'
+  description: >
+    Analyze the following natural language appointment request: "{appointment_request}".
+    Extract: Name, last name, Email, WhatsApp number, date, duration, and purpose.
+    Handle relative time references (like "tomorrow") and convert them to specific ISO dates.
+  expected_output: >
+    A structured JSON format containing: date, start_time, end_time, duration, 
+    attendees (names/emails), subject, and notes.
   agent: appointment_request_parser
+
 check_availability_and_create_calendar_event:
-  description: Con los detalles de la cita analizados, compruebe la disponibilidad
-    del calendario para la franja horaria solicitada. Si está disponible, cree un
-    nuevo evento de calendario de Outlook con todos los detalles. Si hay conflictos,
-    sugiera horarios alternativos. Asegúrese de que el evento incluya a todos los
-    asistentes, la gestión correcta de la zona horaria y los detalles de la reunión.
-  expected_output: Confirmación de la creación correcta del evento del calendario
-    con el ID del evento o sugerencias de horarios alternativos si existen conflictos.
-    Incluya los detalles finales del evento con los asistentes, la hora y el enlace
-    del calendario.
+  description: >
+    Using the parsed details, check availability and use the tool to create an 
+    Outlook event. If conflicts exist, suggest alternatives.
+  expected_output: >
+    Confirmation of the calendar event creation with the Event ID or a conflict report.
   agent: calendar_manager
   context:
-  - parse_appointment_request
+    - parse_appointment_request
+
 send_email_confirmation:
-  description: Envíe un correo electrónico profesional de confirmación de cita a todos
-    los asistentes (use el correo electrónico proporcionado por el usuario) utilizando
-    los detalles del evento del calendario. Incluya el asunto de la reunión, la fecha,
-    la hora, el lugar, la agenda y cualquier instrucción especial. Use un tono profesional
-    y amable, y asegúrese de que toda la información necesaria se comunique con claridad.
-  expected_output: Confirmación de que los correos electrónicos de confirmación de
-    citas profesionales se han enviado correctamente a todos los asistentes, incluido
-    el contenido del correo electrónico y la lista de destinatarios.
+  description: >
+    Draft a professional confirmation email using the calendar event details. 
+    Ensure all attendees are included.
+  expected_output: >
+    The full content of the confirmation email and a list of recipients.
   agent: email_confirmation_specialist
   context:
-  - check_availability_and_create_calendar_event
+    - check_availability_and_create_calendar_event
+
 schedule_whatsapp_reminders:
-  description: Prepara recordatorios de WhatsApp para la cita programada. Crea recordatorios
-    adecuados para 24 horas y 1 hora antes de la cita. Los mensajes deben ser concisos,
-    concisos e incluir detalles clave como la hora, el lugar y el propósito.
-  expected_output: Confirmación de mensajes recordatorios de WhatsApp preparados y
-    programados, incluido el contenido del mensaje y el momento de cada recordatorio.
+  description: >
+    Use the tool to send an immediate confirmation via WhatsApp and prepare 
+    the text for the 24h/1h reminders.
+  expected_output: >
+    Confirmation of the WhatsApp message sent status and the content of the reminders.
   agent: whatsapp_reminder_specialist
   context:
-  - check_availability_and_create_calendar_event
+    - check_availability_and_create_calendar_event
+
 complete_appointment_setup:
-  description: Genere un resumen JSON completo del proceso de programación de citas
-    completado. Consolide toda la información de tareas anteriores, incluyendo los
-    detalles de las citas analizadas, la creación de eventos del calendario, la confirmación
-    por correo electrónico y la programación de recordatorios por WhatsApp. Asegúrese
-    de que el resultado siga una estructura JSON consistente.
-  expected_output: "A standardized JSON object containing: \n{\n  \"appointment_summary\":
-    {\n    \"status\": \"completed/failed\",\n    \"appointment_details\": {\n      \"name\":
-    \"full name\",\n      \"email\": \"email address\", \n      \"whatsapp\": \"phone
-    number with +51 prefix\",\n      \"date\": \"YYYY-MM-DD\",\n      \"time\": \"HH:MM
-    timezone\",\n      \"duration\": \"duration in hours/minutes\",\n      \"purpose\":
-    \"appointment purpose\"\n    },\n    \"calendar_event\": {\n      \"created\":
-    true/false,\n      \"event_id\": \"calendar event ID or null\",\n      \"calendar_link\":
-    \"link to event or null\"\n    },\n    \"email_confirmation\": {\n      \"sent\":
-    true/false,\n      \"recipient\": \"email address\",\n      \"timestamp\": \"when
-    sent or null\"\n    },\n    \"whatsapp_reminders\": {\n      \"scheduled\": true/false,\n
-    \     \"reminder_times\": [\"24h before\", \"1h before\"] or [],\n      \"phone_number\":
-    \"recipient number\"\n    },\n    \"next_steps\": [\"any follow-up actions needed\"]\n
-    \ }\n}"
+  description: >
+    Consolidate all previous task outputs into a final, standardized JSON summary.
+  expected_output: >
+    A standardized JSON object containing the appointment_summary with status, 
+    calendar_event details, email_confirmation status, and whatsapp_reminders info.
   agent: summary_specialist
   context:
-  - send_email_confirmation
-  - schedule_whatsapp_reminders
+    - send_email_confirmation
+    - schedule_whatsapp_reminders
