@@ -1,7 +1,7 @@
 crewai==0.100.1
-langchain-google-genai  # <--- MUST BE HERE
-litellm==1.59.8
+langchain-google-genai
 google-generativeai
+litellm==1.59.8
 pysqlite3-binary
 python-dotenv
 pyyaml
