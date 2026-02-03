@@ -1,4 +1,3 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import sys
 import warnings
@@ -12,52 +11,39 @@ except (ImportError, KeyError):
 
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai.tools import BaseTool
 
 # --- FIXED IMPORT STRATEGY ---
 try:
     from asistente_agenda.tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
     from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
-    from asistente_agenda.tools.custom_tool import MyCustomTool
 except ImportError:
     try:
         from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
         from tools.outlook_calendar_tool import OutlookCalendarTool
-        from tools.custom_tool import MyCustomTool
-    except ImportError as e:
-        print(f"⚠️ Tool Import Warning: {e}. Using placeholders.")
+    except ImportError:
         from crewai.tools import BaseTool
         class WhatsAppBusinessMessenger(BaseTool):
-            name: str = "WhatsApp Placeholder"
+            name: str = "whatsapp_business_messenger"
             description: str = "Tool unavailable"
             def _run(self, **kwargs): return "WhatsApp tool not available."
         class OutlookCalendarTool(BaseTool):
-            name: str = "Outlook Placeholder"
+            name: str = "outlook_calendar_manager"
             description: str = "Tool unavailable"
             def _run(self, **kwargs): return "Outlook tool not available."
-        class MyCustomTool(BaseTool):
-            name: str = "Custom Placeholder"
-            description: str = "Tool unavailable"
-            def _run(self, **kwargs): return "Custom tool not available."
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 @CrewBase
 class AsistenteAgendaCrew:
-    """AsistenteAgendaCrew crew for managing appointment scheduling and notifications"""
-
-    # ✅ PATHING CHECK: Defining the config paths
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
     def __init__(self):
-        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            print("❌ ERROR: No API Key found in GOOGLE_API_KEY or GEMINI_API_KEY")
-        self.shared_llm = ChatGoogleGenerativeAI(
-            model="gemini/gemini-1.5-flash",
-            google_api_key=api_key,
-            provider="google_ai", # <--- ADD THIS LINE
+        # Use the native CrewAI LLM class with the 'google_ai/' prefix.
+        # This is the "Magic String" that forces AI Studio and kills Vertex 404s.
+        self.shared_llm = LLM(
+            model="google_ai/gemini-1.5-flash",
+            api_key=os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )
 
@@ -66,7 +52,6 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["appointment_request_parser"],
             llm=self.shared_llm,
-            allow_delegation=False,
             verbose=True
         )
 
@@ -76,7 +61,6 @@ class AsistenteAgendaCrew:
             config=self.agents_config["calendar_manager"],
             llm=self.shared_llm,
             tools=[OutlookCalendarTool()],
-            allow_delegation=False,
             verbose=True
         )
 
@@ -85,7 +69,6 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["email_confirmation_specialist"],
             llm=self.shared_llm,
-            allow_delegation=False,
             verbose=True
         )
 
@@ -94,8 +77,7 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
             llm=self.shared_llm,
-            tools=[WhatsAppBusinessMessenger(), MyCustomTool()],
-            allow_delegation=False,
+            tools=[WhatsAppBusinessMessenger()],
             verbose=True
         )
 
@@ -104,7 +86,6 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["summary_specialist"],
             llm=self.shared_llm,
-            allow_delegation=False,
             verbose=True
         )
 
