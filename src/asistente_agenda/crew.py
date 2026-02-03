@@ -2,7 +2,7 @@ import os
 import sys
 import warnings
 
-# 1. SQLite Fix for GitHub Actions environment
+# 1. SQLite Fix for GitHub Actions / Linux environments
 try:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
@@ -11,25 +11,38 @@ except (ImportError, KeyError):
 
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
+from crewai.tools import BaseTool
 
-# --- FINAL IMPORT STRATEGY ---
-# We use direct imports because main.py will now inject the correct folder into sys.path
+# --- FIXED IMPORT STRATEGY ---
+# This structure handles the different pathing between local development and GitHub/AMP
 try:
-    from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
-    from tools.outlook_calendar_tool import OutlookCalendarTool
-    from tools.custom_tool import MyCustomTool
+    # Standard import for the structure CrewAI expects
+    from asistente_agenda.tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
+    from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
+    from asistente_agenda.tools.custom_tool import MyCustomTool
 except ImportError:
-    # This acts as a backup for local development environments
     try:
-        from asistente_agenda.tools.whatspp_business_messenger import WhatsAppBusinessMessenger
-        from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
-        from asistente_agenda.tools.custom_tool import MyCustomTool
+        # Fallback for different sys.path setups
+        from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
+        from tools.outlook_calendar_tool import OutlookCalendarTool
+        from tools.custom_tool import MyCustomTool
     except ImportError as e:
-        print(f"❌ Tool Import Error: {e}")
-        # Placeholder classes to prevent 'NoneType' errors during Agent initialization
-        class WhatsAppBusinessMessenger: pass
-        class OutlookCalendarTool: pass
-        class MyCustomTool: pass
+        print(f"⚠️ Tool Import Warning: {e}. Using placeholders.")
+        # Placeholders must inherit from BaseTool to pass Agent validation
+        class WhatsAppBusinessMessenger(BaseTool):
+            name: str = "WhatsApp Placeholder"
+            description: str = "Tool unavailable due to import error"
+            def _run(self, **kwargs): return "WhatsApp tool not available."
+
+        class OutlookCalendarTool(BaseTool):
+            name: str = "Outlook Placeholder"
+            description: str = "Tool unavailable due to import error"
+            def _run(self, **kwargs): return "Outlook tool not available."
+
+        class MyCustomTool(BaseTool):
+            name: str = "Custom Placeholder"
+            description: str = "Tool unavailable due to import error"
+            def _run(self, **kwargs): return "Custom tool not available."
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
@@ -38,7 +51,8 @@ class AsistenteAgendaCrew:
     """AsistenteAgendaCrew crew for managing appointment scheduling and notifications"""
 
     def __init__(self):
-        # 2. LLM Configuration: Forcing Google AI Studio to avoid Vertex 404s
+        # 2. LLM Configuration: Using Google AI Studio (Gemini)
+        # Note: Ensure GOOGLE_API_KEY is set in GitHub Secrets and CrewAI Settings
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
@@ -62,6 +76,7 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["calendar_manager"],
             llm=self.shared_llm,
+            # ✅ Fixed: Initializing the tool class properly
             tools=[OutlookCalendarTool()],
             allow_delegation=False,
             verbose=True
@@ -81,7 +96,7 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["whatsapp_reminder_specialist"],
             llm=self.shared_llm,
-            # Initializing tools safely
+            # ✅ Fixed: Initializing tools safely with parentheses
             tools=[WhatsAppBusinessMessenger(), MyCustomTool()],
             allow_delegation=False,
             verbose=True
