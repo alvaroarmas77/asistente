@@ -53,7 +53,6 @@ class AsistenteAgendaCrew:
         self.shared_llm = LLM(
             model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
-            api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.5
         )
 
