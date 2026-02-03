@@ -49,8 +49,4 @@ class OutlookCalendarTool(BaseTool):
                 return "Success: Appointment created in Outlook."
             return f"Error from Microsoft Graph: {response.status_code} - {response.text}"
         except Exception as e:
-<<<<<<< HEAD
             return f"Exception occurred while calling Outlook API: {str(e)}"
-=======
-            return f"Exception occurred while calling Outlook API: {str(e)}"
->>>>>>> 4a5b718517196c0da941af59262a455522dad0de
