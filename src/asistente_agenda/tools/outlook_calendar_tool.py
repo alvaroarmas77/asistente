@@ -17,9 +17,10 @@ class OutlookCalendarTool(BaseTool):
     args_schema: Type[BaseModel] = OutlookCalendarRequest
 
     def _run(self, subject: str, start_time: str, end_time: str, attendee_email: str) -> str:
+        # 1. Check for token
         token = os.getenv('OUTLOOK_ACCESS_TOKEN')
         if not token:
-            return "Error: OUTLOOK_ACCESS_TOKEN not set."
+            return "Error: OUTLOOK_ACCESS_TOKEN environment variable not set."
 
         url = "https://graph.microsoft.com/v1.0/me/events"
         headers = {
@@ -27,17 +28,25 @@ class OutlookCalendarTool(BaseTool):
             "Content-Type": "application/json"
         }
         
+        # 2. Build the Microsoft Graph API event object
         event = {
             "subject": subject,
             "start": {"dateTime": start_time, "timeZone": "UTC"},
             "end": {"dateTime": end_time, "timeZone": "UTC"},
-            "attendees": [{"emailAddress": {"address": attendee_email}}]
+            "attendees": [
+                {
+                    "emailAddress": {
+                        "address": attendee_email
+                    },
+                    "type": "required"
+                }
+            ]
         }
         
         try:
             response = requests.post(url, headers=headers, json=event, timeout=10)
             if response.status_code == 201:
                 return "Success: Appointment created in Outlook."
-            return f"Error: {response.text}"
+            return f"Error from Microsoft Graph: {response.status_code} - {response.text}"
         except Exception as e:
-            return f"Exception: {str(e)}"
+            return f"Exception occurred while calling Outlook API: {str(e)}"
