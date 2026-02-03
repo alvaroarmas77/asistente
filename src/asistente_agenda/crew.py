@@ -54,7 +54,7 @@ class AsistenteAgendaCrew:
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         if not api_key:
             print("❌ ERROR: No API Key found in GOOGLE_API_KEY or GEMINI_API_KEY")
-        self.shared_llm = LLM(
+        self.shared_llm = ChatGoogleGenerativeAI(
             model="gemini/gemini-1.5-flash",
             google_api_key=api_key,
             provider="google_ai", # <--- ADD THIS LINE
