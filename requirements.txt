@@ -1,6 +1,7 @@
 crewai==0.100.1
-# Do NOT include google-cloud-aiplatform
-# Do NOT include google-cloud-resource-manager
-langchain-google-genai
-litellm
+langchain-google-genai  # <--- MUST BE HERE
+litellm==1.59.8
+google-generativeai
 pysqlite3-binary
+python-dotenv
+pyyaml
