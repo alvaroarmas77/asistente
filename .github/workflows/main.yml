@@ -19,13 +19,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-<<<<<<< HEAD
-          # Explicitly install the bridge library to avoid the 404 Vertex error
+          # We include langchain-google-genai to fix the 404 Vertex error
           pip install crewai==0.100.1 litellm==1.59.8 google-generativeai langchain-google-genai pysqlite3-binary python-dotenv pyyaml
-=======
-          pip uninstall -y langchain-google-genai
-          pip install crewai==0.100.1 litellm==1.59.8 google-generativeai pysqlite3-binary python-dotenv pyyaml
->>>>>>> 4a5b718517196c0da941af59262a455522dad0de
           pip freeze
 
       - name: Run CrewAI
@@ -41,11 +36,6 @@ jobs:
             exit 1
           else
             echo "✅ GOOGLE_API_KEY is present."
-<<<<<<< HEAD
-          fi
-          python src/asistente_agenda/main.py
-=======
             echo "Key starts with: ${GOOGLE_API_KEY:0:4}"
           fi
           python src/asistente_agenda/main.py
->>>>>>> 4a5b718517196c0da941af59262a455522dad0de
