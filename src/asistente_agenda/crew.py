@@ -1,6 +1,10 @@
 import os
 import sys
 import warnings
+from crewai import Agent, Crew, Process, Task
+from crewai.project import CrewBase, agent, crew, task
+# Use this specific import
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 # 1. SQLite Fix
 try:
@@ -42,10 +46,8 @@ class AsistenteAgendaCrew:
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         # This is the "Magic String" that forces AI Studio and kills Vertex 404s.
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash",
-            api_key=api_key,
-            base_url="https://generativelanguage.googleapis.com/v1beta",
-            provider="google",
+            model="gemini-1.5-flash",
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.5
         )
 

@@ -34,7 +34,41 @@ def run():
     import os
     import sys
 
+    # 1. TRIPLE-LOCK: Physically delete Vertex triggers from the Python procesimport os
+    import sys
+
     # 1. TRIPLE-LOCK: Physically delete Vertex triggers from the Python process memory
+    # This forces LiteLLM to use the API Key path instead of Google Cloud path.
+    vars_to_kill = [
+        "GOOGLE_CLOUD_PROJECT", 
+        "GOOGLE_APPLICATION_CREDENTIALS", 
+        "VERTEXAI_PROJECT", 
+        "VERTEXAI_LOCATION",
+        "CLOUD_RUNTIME",
+        "GOOGLE_SERVICE_ACCOUNT"
+    ]
+    for var in vars_to_kill:
+        if var in os.environ:
+            del os.environ[var]
+
+    # 2. Setup path
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    if current_path not in sys.path:
+        sys.path.append(current_path)
+
+    # 3. Kickoff logic (Ensure you import your crew here)
+    try:
+        from asistente_agenda.crew import AsistenteAgendaCrew
+    except ImportError:
+        from crew import AsistenteAgendaCrew
+
+    inputs = {
+        'appointment_request': 'Quiero una cita para mañana a las 3pm para una revisión técnica con Juan Perez (+51999888777).',
+        'Nombre': 'Juan',
+        'apellido': 'Perez'
+    }
+    
+    AsistenteAgendaCrew().crew().kickoff(inputs=inputs)s memory
     # This forces LiteLLM to use the API Key path instead of Google Cloud path.
     vars_to_kill = [
         "GOOGLE_CLOUD_PROJECT", 
