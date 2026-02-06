@@ -39,6 +39,7 @@ class AsistenteAgendaCrew:
 
     def __init__(self):
         # FIX: Use the native CrewAI LLM class with the 'gemini/' prefix.
+        # additional comment
         # This is the "magic word" that prevents the 'Provider NOT provided' error.
         self.shared_llm = LLM(
             model="gemini/gemini-2.0-flash",
