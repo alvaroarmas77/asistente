@@ -68,7 +68,6 @@ def run():
         'apellido': 'Perez'
     }
     
-    AsistenteAgendaCrew().crew().kickoff(inputs=inputs)s memory
     # This forces LiteLLM to use the API Key path instead of Google Cloud path.
     vars_to_kill = [
         "GOOGLE_CLOUD_PROJECT", 
