@@ -20,7 +20,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
+      # test connections
+      - name: Test Connection
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python test_connection.py
+      #test connections
       - name: Run CrewAI
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
