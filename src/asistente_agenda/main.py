@@ -31,6 +31,11 @@ def setup_environment():
     return api_key
 
 def run():
+    # Physically delete Vertex triggers from the Python process memory
+    for var in ["GOOGLE_CLOUD_PROJECT", "GOOGLE_APPLICATION_CREDENTIALS", "VERTEXAI_PROJECT"]:
+        if var in os.environ:
+            del os.environ[var]
+    
     setup_environment()
     
     current_file_path = os.path.abspath(__file__)

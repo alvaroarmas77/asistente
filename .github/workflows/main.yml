@@ -34,4 +34,8 @@ jobs:
           LITELLM_LOCAL_RESOURCES: "True"
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
+          # The "Nuke" command: Unset every possible variable that triggers Vertex AI
+          unset GOOGLE_CLOUD_PROJECT
+          unset GOOGLE_APPLICATION_CREDENTIALS
+          unset VERTEXAI_PROJECT
           python src/asistente_agenda/main.py
