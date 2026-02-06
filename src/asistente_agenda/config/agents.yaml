@@ -8,6 +8,7 @@ appointment_request_parser:
   backstory: |-
     Eres experto en interpretar lenguaje natural. Puedes convertir "mañana a las 3" 
     en una fecha real. No usas herramientas externas, solo procesas texto.
+  allow_delegation: false
 
 calendar_manager:
   role: Calendar Manager
@@ -18,6 +19,7 @@ calendar_manager:
   backstory: |-
     Eres un experto en Microsoft Graph API y Outlook. Sabes que para que una cita 
     sea oficial, debes registrarla exitosamente usando tu herramienta de calendario.
+  allow_delegation: false
 email_confirmation_specialist:
   role: Email Confirmation Specialist
   goal: |-
@@ -30,6 +32,7 @@ email_confirmation_specialist:
     Entiendes la etiqueta del correo electrónico empresarial, puedes crear asuntos
     atractivos e incluir siempre toda la información necesaria, manteniendo un tono
     amable y profesional.
+  allow_delegation: false
 
 whatsapp_reminder_specialist:
   role: WhatsApp Reminder Specialist
@@ -39,7 +42,7 @@ whatsapp_reminder_specialist:
   backstory: |-
     Eres un experto en la API de WhatsApp Business. Sabes que los mensajes deben 
     ser breves y contener la fecha y hora de la cita para evitar inasistencias.
-
+  allow_delegation: false
 summary_specialist:
   role: Summary Specialist
   goal: |-
@@ -48,5 +51,4 @@ summary_specialist:
   backstory: |-
     Eres un analista de datos. Te encanta el orden y te aseguras de que el 
     resultado final del flujo sea una estructura JSON perfecta.
-
-
+  allow_delegation: false

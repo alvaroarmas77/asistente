@@ -45,6 +45,7 @@ class AsistenteAgendaCrew:
             api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.5,
             max_rpm=10
+            timeout=120
         )
 
     @agent
