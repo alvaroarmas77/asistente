@@ -13,22 +13,22 @@ except (ImportError, KeyError):
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 def setup_environment():
-    raw_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     
-    if not raw_key:
-        print("⚠️ WARNING: No API Key found!")
-    
-    os.environ["GOOGLE_API_KEY"] = str(raw_key) if raw_key else ""
-    os.environ["GEMINI_API_KEY"] = str(raw_key) if raw_key else ""
-    os.environ["LITELLM_LOCAL_RESOURCES"] = "True"
-    
-    # Remove Vertex triggers
-    vars_to_remove = ["GOOGLE_CLOUD_PROJECT", "GOOGLE_APPLICATION_CREDENTIALS", 
-                      "VERTEXAI_PROJECT", "VERTEXAI_LOCATION", "CLOUD_RUNTIME"]
-    for var in vars_to_remove:
+    vertex_triggers = [
+        "GOOGLE_CLOUD_PROJECT", 
+        "GOOGLE_APPLICATION_CREDENTIALS", 
+        "VERTEXAI_PROJECT", 
+        "VERTEXAI_LOCATION",
+        "CLOUD_RUNTIME",
+        "GOOGLE_SERVICE_ACCOUNT"
+    ]
+    for var in vertex_triggers:
         os.environ.pop(var, None)
-            
-    return raw_key
+
+    # 3. Explicitly set the key for the Generative AI path
+    os.environ["GOOGLE_API_KEY"] = str(api_key)
+    return api_key
 
 def run():
     setup_environment()

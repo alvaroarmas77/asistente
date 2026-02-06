@@ -23,7 +23,7 @@ class WhatsAppBusinessMessenger(BaseTool):
             return "Error: Missing WhatsApp environment variables."
 
         # WhatsApp API usually wants numbers without the '+' prefix
-        clean_phone = ''.join(filter(str.isdigit, phone_number))
+        clean_phone = ''.join(filter(str.isdigit, target_number))
         url = f"https://graph.facebook.com/v18.0/{phone_number_id}/messages"
         
         headers = {

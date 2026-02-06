@@ -42,7 +42,7 @@ class AsistenteAgendaCrew:
         # Use the native CrewAI LLM class with the 'google_ai/' prefix.
         # This is the "Magic String" that forces AI Studio and kills Vertex 404s.
         self.shared_llm = LLM(
-            model="google_ai/gemini-1.5-flash",
+            model="gemini/gemini-1.5-flash",
             api_key=os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"),
             temperature=0.5
         )

@@ -30,6 +30,7 @@ jobs:
           OUTLOOK_ACCESS_TOKEN: ${{ secrets.OUTLOOK_ACCESS_TOKEN }}
           WHATSAPP_ACCESS_TKN: ${{ secrets.WHATSAPP_ACCESS_TKN }}
           WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+          RECIPIENT_PHONE_NUMBER: ${{ secrets.RECIPIENT_PHONE_NUMBER }}
           LITELLM_LOCAL_RESOURCES: "True"
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
