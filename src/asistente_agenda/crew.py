@@ -1,9 +1,8 @@
 import os
 import sys
 import warnings
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM  # Added LLM import
 from crewai.project import CrewBase, agent, crew, task
-from langchain_google_genai import ChatGoogleGenerativeAI
 
 # SQLite Fix for GitHub Environments
 try:
@@ -21,7 +20,6 @@ except ImportError:
         from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
         from tools.outlook_calendar_tool import OutlookCalendarTool
     except ImportError:
-        # Fallback if tools are missing
         from crewai.tools import BaseTool
         class WhatsAppBusinessMessenger(BaseTool):
             name: str = "whatsapp_business_messenger"
@@ -40,11 +38,11 @@ class AsistenteAgendaCrew:
     tasks_config = 'config/tasks.yaml'
 
     def __init__(self):
-        # We use the direct Google AI Studio SDK. 
-        # This physically cannot trigger a VertexAI 404 error.
-        self.shared_llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
-            google_api_key=os.getenv("GOOGLE_API_KEY"),
+        # FIX: Use the native CrewAI LLM class with the 'gemini/' prefix.
+        # This is the "magic word" that prevents the 'Provider NOT provided' error.
+        self.shared_llm = LLM(
+            model="gemini/gemini-1.5-flash",
+            api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.5
         )
 
