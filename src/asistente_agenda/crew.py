@@ -39,11 +39,13 @@ class AsistenteAgendaCrew:
     tasks_config = 'config/tasks.yaml'
 
     def __init__(self):
-        # Use the native CrewAI LLM class with the 'google_ai/' prefix.
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         # This is the "Magic String" that forces AI Studio and kills Vertex 404s.
         self.shared_llm = LLM(
-            model="google_ai/gemini-1.5-flash",
-            api_key=os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"),
+            model="gemini/gemini-1.5-flash",
+            api_key=api_key,
+            base_url="https://generativelanguage.googleapis.com/v1beta",
+            provider="google",
             temperature=0.5
         )
 

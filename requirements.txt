@@ -2,7 +2,6 @@ crewai==0.100.1
 litellm==1.57.0  <-- Specific stable version
 pydantic==2.10.4 <-- Fixes the 'NoneType' iterable error
 google-generativeai==0.8.3
-pysqlite3-binary
 python-dotenv
 pyyaml
 requests
