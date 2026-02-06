@@ -41,7 +41,7 @@ class AsistenteAgendaCrew:
         # FIX: Use the native CrewAI LLM class with the 'gemini/' prefix.
         # This is the "magic word" that prevents the 'Provider NOT provided' error.
         self.shared_llm = LLM(
-            model="gemini/gemini-1.5-flash",
+            model="gemini/gemini-2.0-flash",
             api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.5
         )
