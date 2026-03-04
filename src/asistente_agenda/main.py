@@ -46,14 +46,14 @@ def run():
         'Nombre': 'Juan',
         'apellido': 'Perez'
     }
-    AsistenteAgendaCrew().crew().kickoff(inputs=inputs
-                                         
+
     try:
         print(f"🚀 Initializing Crew with Key (last 4): ...{api_key[-4:]}")
         # Initialize your class
         crew_instance = AsistenteAgendaCrew()
         
         # Access the crew() method and kickoff
+        # Parenthesis is now closed correctly below:
         result = crew_instance.crew().kickoff(inputs=inputs)
         
         print("\n✅ Crew Execution Complete!")
