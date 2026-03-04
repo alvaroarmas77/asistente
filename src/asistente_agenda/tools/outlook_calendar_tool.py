@@ -31,9 +31,10 @@ class OutlookCalendarTool(BaseTool):
             "grant_type": "client_credentials",
             "client_id": client_id,
             "client_secret": client_secret,
-            "scope": "https://graph.microsoft.com/.default"
+            # Cambiamos .default por los scopes específicos si es necesario
+            "scope": "https://graph.microsoft.com/.default" 
         }
-        
+
         try:
             token_res = requests.post(token_url, data=token_data, timeout=10)
             token_res.raise_for_status()
