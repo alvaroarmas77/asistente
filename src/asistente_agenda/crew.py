@@ -104,10 +104,6 @@ class AsistenteAgendaCrew:
         return Task(config=self.tasks_config["send_email_confirmation"])
 
     @task
-    def schedule_whatsapp_reminders(self) -> Task:
-        return Task(config=self.tasks_config["schedule_whatsapp_reminders"])
-
-    @task
     def complete_appointment_setup(self) -> Task:
         return Task(config=self.tasks_config["complete_appointment_setup"])
 
