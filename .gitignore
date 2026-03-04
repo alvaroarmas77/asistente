@@ -1,6 +1,0 @@
-.env
-__pycache__/
-.DS_Store
-# Added for CrewAI stability
-*.db
-.chroma/
