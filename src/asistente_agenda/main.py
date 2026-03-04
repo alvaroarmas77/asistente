@@ -31,8 +31,9 @@ def run():
         print("❌ Error: GOOGLE_API_KEY not found in environment variables.")
         sys.exit(1)
 
+    # Updated inputs: Removed specific WhatsApp messaging context from the request
     inputs = {
-        'appointment_request': 'Quiero una cita para mañana a las 3pm para una revisión técnica con Juan Perez (+51999888777).',
+        'appointment_request': 'Quiero una cita para mañana a las 3pm para una revisión técnica con Juan Perez.',
         'Nombre': 'Juan',
         'apellido': 'Perez'
     }

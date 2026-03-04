@@ -11,20 +11,14 @@ try:
 except (ImportError, KeyError):
     pass
 
-# Import Tools
+# Import Tools (WhatsApp removed)
 try:
-    from asistente_agenda.tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
     from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
 except ImportError:
     try:
-        from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
         from tools.outlook_calendar_tool import OutlookCalendarTool
     except ImportError:
         from crewai.tools import BaseTool
-        class WhatsAppBusinessMessenger(BaseTool):
-            name: str = "whatsapp_business_messenger"
-            description: str = "Tool unavailable"
-            def _run(self, **kwargs): return "WhatsApp tool not available."
         class OutlookCalendarTool(BaseTool):
             name: str = "outlook_calendar_manager"
             description: str = "Tool unavailable"
@@ -39,7 +33,6 @@ class AsistenteAgendaCrew:
 
     def __init__(self):
         # FIX: Use the native CrewAI LLM class with the 'gemini/' prefix.
-        # additional comment
         # This is the "magic word" that prevents the 'Provider NOT provided' error.
         self.shared_llm = LLM(
             model="gemini/gemini-2.0-flash",
@@ -75,15 +68,6 @@ class AsistenteAgendaCrew:
         )
 
     @agent
-    def whatsapp_reminder_specialist(self) -> Agent:
-        return Agent(
-            config=self.agents_config["whatsapp_reminder_specialist"],
-            llm=self.shared_llm,
-            tools=[WhatsAppBusinessMessenger()],
-            verbose=True
-        )
-
-    @agent
     def summary_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config["summary_specialist"],
@@ -102,10 +86,6 @@ class AsistenteAgendaCrew:
     @task
     def send_email_confirmation(self) -> Task:
         return Task(config=self.tasks_config["send_email_confirmation"])
-
-    @task
-    def schedule_whatsapp_reminders(self) -> Task:
-        return Task(config=self.tasks_config["schedule_whatsapp_reminders"])
 
     @task
     def complete_appointment_setup(self) -> Task:
