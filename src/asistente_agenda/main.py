@@ -46,7 +46,8 @@ def run():
         'Nombre': 'Juan',
         'apellido': 'Perez'
     }
-    
+    AsistenteAgendaCrew().crew().kickoff(inputs=inputs
+                                         
     try:
         print(f"🚀 Initializing Crew with Key (last 4): ...{api_key[-4:]}")
         # Initialize your class

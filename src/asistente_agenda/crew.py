@@ -36,12 +36,16 @@ class AsistenteAgendaCrew:
         # additional comment
         # This is the "magic word" that prevents the 'Provider NOT provided' error.
         self.shared_llm = LLM(
-            model="gemini/gemini-2.0-flash",
+            model=os.getenv("MODEL", "gemini/gemini-3.1-pro-preview"),
             api_key=os.getenv("GOOGLE_API_KEY"),
-            temperature=0.5,
-            max_rpm=2,
-            timeout=120
+            temperature=1.0,           # Higher temperature is better for 3.1 reasoning
+            max_rpm=10,                # You can increase this if you have a paid plan
+            # New Gemini 3.1 parameter for thinking depth
+            config={
+                "thinking_level": "medium" 
+            }
         )
+
 
     @agent
     def appointment_request_parser(self) -> Agent:
