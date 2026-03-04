@@ -26,7 +26,7 @@ class OutlookCalendarTool(BaseTool):
         if not all([client_id, client_secret, tenant_id, user_email]):
             return "Error: Faltan credenciales (ID, Secret, Tenant o Email) en los Secrets de Streamlit."
 
-        # 2. Generar el Token JWT real (con puntos)
+        # 2. Generar el Token JWT real (con puntos xxxx.yyyy.zzzz)
         token_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
         token_data = {
             "grant_type": "client_credentials",
@@ -38,15 +38,20 @@ class OutlookCalendarTool(BaseTool):
         try:
             token_res = requests.post(token_url, data=token_data, timeout=10)
             token_res.raise_for_status()
-            token = token_res.json().get("access_token")
-            # Aquí ya tenemos el token xxxx.yyyy.zzzz
+            
+            # Usamos un nombre de variable único para evitar conflictos de sistema
+            final_jwt = token_res.json().get("access_token")
+            
+            if not final_jwt or "." not in final_jwt:
+                return "Error: El token recibido de Microsoft no tiene el formato JWT esperado."
+                
         except Exception as e:
             return f"Error obteniendo Token JWT: {str(e)}"
 
-        # 3. Llamada a Microsoft Graph
+        # 3. Llamada a Microsoft Graph usando el token recién generado
         url = f"https://graph.microsoft.com/v1.0/users/{user_email}/events"
         headers = {
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {final_jwt}", # <--- Usamos la variable específica
             "Content-Type": "application/json"
         }
         
@@ -66,6 +71,8 @@ class OutlookCalendarTool(BaseTool):
             response = requests.post(url, headers=headers, json=event, timeout=10)
             if response.status_code == 201:
                 return f"✅ Éxito: Cita agendada para {user_email}."
+            
+            # Si falla aquí con 401, sabremos que el token fue rechazado por contenido, no por formato
             return f"Error de Microsoft Graph: {response.status_code} - {response.text}"
         except Exception as e:
             return f"Excepción en la API: {str(e)}"
