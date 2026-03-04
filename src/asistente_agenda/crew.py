@@ -13,18 +13,12 @@ except (ImportError, KeyError):
 
 # Import Tools
 try:
-    from asistente_agenda.tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
     from asistente_agenda.tools.outlook_calendar_tool import OutlookCalendarTool
 except ImportError:
     try:
-        from tools.whatsapp_business_messenger import WhatsAppBusinessMessenger
         from tools.outlook_calendar_tool import OutlookCalendarTool
     except ImportError:
         from crewai.tools import BaseTool
-        class WhatsAppBusinessMessenger(BaseTool):
-            name: str = "whatsapp_business_messenger"
-            description: str = "Tool unavailable"
-            def _run(self, **kwargs): return "WhatsApp tool not available."
         class OutlookCalendarTool(BaseTool):
             name: str = "outlook_calendar_manager"
             description: str = "Tool unavailable"
@@ -71,15 +65,6 @@ class AsistenteAgendaCrew:
         return Agent(
             config=self.agents_config["email_confirmation_specialist"],
             llm=self.shared_llm,
-            verbose=True
-        )
-
-    @agent
-    def whatsapp_reminder_specialist(self) -> Agent:
-        return Agent(
-            config=self.agents_config["whatsapp_reminder_specialist"],
-            llm=self.shared_llm,
-            tools=[WhatsAppBusinessMessenger()],
             verbose=True
         )
 
