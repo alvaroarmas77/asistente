@@ -1,0 +1,28 @@
+[project]
+name = "asistente_agenda"
+version = "0.1.0"
+description = "asistente_agenda using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "crewai[google,google-genai,tools]",
+    "litellm==1.59.8",
+    "google-generativeai>=0.8.0",
+    "python-dotenv",
+    "pyyaml",
+]
+
+[project.scripts]
+asistente_agenda = "asistente_agenda.main:run"
+run_crew = "asistente_agenda.main:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
+
+[tool.uv]
+package = true
+# We removed "required-environments" to stop uv from looking for Linux packages on Windows
