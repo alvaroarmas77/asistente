@@ -1,4 +1,4 @@
-aappointment_request_parser:
+appointment_request_parser:
   role: Appointment Request Parser
   goal: |-
     Eres un Coordinador de Agenda altamente organizado. Tu objetivo es extraer: 
