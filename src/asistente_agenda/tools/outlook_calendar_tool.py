@@ -13,20 +13,19 @@ class OutlookCalendarRequest(BaseModel):
 
 class OutlookCalendarTool(BaseTool):
     name: str = "outlook_calendar_manager"
-    description: str = "Crea eventos reales en el calendario de Outlook/Microsoft 365."
+    description: str = "Crea eventos reales en el calendario de Outlook/Microsoft 365 para Perú."
     args_schema: Type[BaseModel] = OutlookCalendarRequest
 
     def _run(self, subject: str, start_time: str, end_time: str, attendee_email: str) -> str:
-        # 1. Obtener credenciales
         client_id = os.getenv('AZURE_CLIENT_ID')
         client_secret = os.getenv('AZURE_CLIENT_SECRET')
         tenant_id = os.getenv('AZURE_TENANT_ID')
         user_email = os.getenv('MY_OUTLOOK_EMAIL')
 
         if not all([client_id, client_secret, tenant_id, user_email]):
-            return "Error: Faltan credenciales (ID, Secret, Tenant o Email) en los Secrets de Streamlit."
+            return "Error: Faltan credenciales en los Secrets de Streamlit."
 
-        # 2. Generar el Token JWT real (con puntos xxxx.yyyy.zzzz)
+        # 1. Obtener Token JWT
         token_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
         token_data = {
             "grant_type": "client_credentials",
@@ -38,41 +37,48 @@ class OutlookCalendarTool(BaseTool):
         try:
             token_res = requests.post(token_url, data=token_data, timeout=10)
             token_res.raise_for_status()
-            
-            # Usamos un nombre de variable único para evitar conflictos de sistema
             final_jwt = token_res.json().get("access_token")
-            
-            if not final_jwt or "." not in final_jwt:
-                return "Error: El token recibido de Microsoft no tiene el formato JWT esperado."
-                
         except Exception as e:
-            return f"Error obteniendo Token JWT: {str(e)}"
+            return f"Error obteniendo Token: {str(e)}"
 
-        # 3. Llamada a Microsoft Graph usando el token recién generado
+        # 2. Configurar el evento para PERÚ (SA Pacific Standard Time)
         url = f"https://graph.microsoft.com/v1.0/users/{user_email}/events"
         headers = {
-            "Authorization": f"Bearer {final_jwt}", # <--- Usamos la variable específica
-            "Content-Type": "application/json"
+            "Authorization": f"Bearer {final_jwt}",
+            "Content-Type": "application/json",
+            "Prefer": 'outlook.timezone="SA Pacific Standard Time"' # Forzamos zona horaria de Perú
         }
         
         event = {
             "subject": subject,
-            "start": {"dateTime": start_time, "timeZone": "UTC"},
-            "end": {"dateTime": end_time, "timeZone": "UTC"},
+            "body": {
+                "contentType": "HTML",
+                "content": f"Cita agendada por Asistente IA para {attendee_email}"
+            },
+            "start": {
+                "dateTime": start_time,
+                "timeZone": "SA Pacific Standard Time" 
+            },
+            "end": {
+                "dateTime": end_time,
+                "timeZone": "SA Pacific Standard Time"
+            },
             "attendees": [
                 {
                     "emailAddress": {"address": attendee_email},
                     "type": "required"
                 }
-            ]
+            ],
+            "location": {"displayName": "Reunión Virtual / Oficina"}
         }
         
         try:
             response = requests.post(url, headers=headers, json=event, timeout=10)
             if response.status_code == 201:
-                return f"✅ Éxito: Cita agendada para {user_email}."
+                data = response.json()
+                web_url = data.get('webLink', 'No disponible')
+                return f"✅ Éxito: Cita agendada en el calendario de {user_email} (Hora Perú). Link: {web_url}"
             
-            # Si falla aquí con 401, sabremos que el token fue rechazado por contenido, no por formato
             return f"Error de Microsoft Graph: {response.status_code} - {response.text}"
         except Exception as e:
             return f"Excepción en la API: {str(e)}"
