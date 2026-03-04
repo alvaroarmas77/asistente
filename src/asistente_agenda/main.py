@@ -23,6 +23,12 @@ except (ImportError, KeyError):
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 def run():
+    # --- ADDED: ENVIRONMENT ALIASING ---
+    # This maps your Azure Secrets to the names the tool is looking for
+    if os.getenv("AZURE_CLIENT_ID"):
+        os.environ['OUTLOOK_ACCESS_TOKEN'] = os.getenv("AZURE_CLIENT_ID")
+    # -----------------------------------
+
     # Setup pathing
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, "../../"))
@@ -53,7 +59,6 @@ def run():
         crew_instance = AsistenteAgendaCrew()
         
         # Access the crew() method and kickoff
-        # Parenthesis is now closed correctly below:
         result = crew_instance.crew().kickoff(inputs=inputs)
         
         print("\n✅ Crew Execution Complete!")
