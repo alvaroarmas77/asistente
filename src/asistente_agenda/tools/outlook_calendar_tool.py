@@ -5,29 +5,24 @@ import requests
 import os
 
 class OutlookCalendarRequest(BaseModel):
-    """Esquema de entrada para la herramienta de calendario."""
     subject: str = Field(..., description="El título de la reunión")
-    start_time: str = Field(..., description="Fecha y hora de inicio en formato ISO (e.g. '2026-03-05T15:00:00')")
-    end_time: str = Field(..., description="Fecha y hora de fin en formato ISO")
+    start_time: str = Field(..., description="Fecha y hora de inicio ISO (e.g. '2026-03-05T15:00:00')")
+    end_time: str = Field(..., description="Fecha y hora de fin ISO")
     attendee_email: str = Field(..., description="Email de la persona que solicita la cita")
 
 class OutlookCalendarTool(BaseTool):
     name: str = "outlook_calendar_manager"
-    description: str = "Crea eventos reales en el calendario de Outlook personal para Perú."
+    description: str = "Crea eventos en el calendario de Outlook Business y envía invitaciones."
     args_schema: Type[BaseModel] = OutlookCalendarRequest
 
     def _run(self, subject: str, start_time: str, end_time: str, attendee_email: str) -> str:
-        # Recuperar credenciales de los Secrets
         client_id = os.getenv('AZURE_CLIENT_ID')
         client_secret = os.getenv('AZURE_CLIENT_SECRET')
-        # Para cuentas personales, tenant_id DEBE ser 'consumers' en tus Secrets de Streamlit
-        tenant_id = os.getenv('AZURE_TENANT_ID', 'consumers') 
-        user_email = "soportesap@frontera-virtual.com" # Hardcoded para asegurar el endpoint
+        # ¡CAMBIO CRÍTICO!: Para Business, NO uses 'consumers', usa el ID largo de tus Secrets
+        tenant_id = os.getenv('AZURE_TENANT_ID') 
+        user_email = "soportesap@frontera-virtual.com"
 
-        if not all([client_id, client_secret, tenant_id]):
-            return "Error: Faltan credenciales AZURE_CLIENT_ID o AZURE_CLIENT_SECRET en Secrets."
-
-        # 1. Obtener Token JWT (Flujo OAuth2 Client Credentials)
+        # 1. Obtener Token
         token_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
         token_data = {
             "grant_type": "client_credentials",
@@ -38,62 +33,51 @@ class OutlookCalendarTool(BaseTool):
 
         try:
             token_res = requests.post(token_url, data=token_data, timeout=10)
-            if token_res.status_code != 200:
-                return f"Error de Autenticación Azure: {token_res.text}"
-            
             final_jwt = token_res.json().get("access_token")
         except Exception as e:
-            return f"Error obteniendo Token: {str(e)}"
+            return f"Error de Token: {str(e)}"
 
-        # 2. Endpoint específico para cuenta personal (users/email)
-        url = f"https://graph.microsoft.com/v1.0/users/{user_email}/events"
+        # 2. URL FORZADA AL CALENDARIO VISUAL (Paso 3 crítico)
+        # Cambiamos /events por /calendar/events para que aparezca en tu Outlook
+        url = f"https://graph.microsoft.com/v1.0/users/{user_email}/calendar/events"
         
         headers = {
             "Authorization": f"Bearer {final_jwt}",
             "Content-Type": "application/json",
-            "Prefer": 'outlook.timezone="SA Pacific Standard Time"' # Zona horaria de Perú
+            "Prefer": 'outlook.timezone="SA Pacific Standard Time"'
         }
         
-        # Estructura del Evento
         event = {
             "subject": subject,
             "body": {
                 "contentType": "HTML",
-                "content": f"Cita agendada por Asistente IA para {attendee_email}. Confirmada automáticamente."
+                "content": f"Cita agendada por Asistente IA. <br>Invitado: {attendee_email}"
             },
-            "start": {
-                "dateTime": start_time,
-                "timeZone": "SA Pacific Standard Time" 
-            },
-            "end": {
-                "dateTime": end_time,
-                "timeZone": "SA Pacific Standard Time"
-            },
+            "start": {"dateTime": start_time, "timeZone": "SA Pacific Standard Time"},
+            "end": {"dateTime": end_time, "timeZone": "SA Pacific Standard Time"},
             "attendees": [
                 {
                     "emailAddress": {"address": attendee_email},
                     "type": "required"
                 }
             ],
-            "location": {"displayName": "Microsoft Teams / Virtual"},
-            # Esto intenta que Outlook envíe la invitación por correo automáticamente
-            "responseRequested": True 
+            # ESTO FUERZA EL ENVÍO DEL CORREO DE INVITACIÓN
+            "allowNewTimeProposals": True,
+            "isOnlineMeeting": True,
+            "onlineMeetingProvider": "teamsForBusiness"
         }
         
         try:
-            # 3. Llamada a la API de Microsoft Graph
+            # Crear evento e invitar automáticamente
             response = requests.post(url, headers=headers, json=event, timeout=10)
             
             if response.status_code == 201:
-                data = response.json()
-                web_url = data.get('webLink', 'No disponible')
-                return f"✅ ¡Cita creada con éxito en tu calendario! Link: {web_url}"
+                web_url = response.json().get('webLink', 'No disponible')
+                # Si el evento se creó, el correo de invitación se envía automáticamente 
+                # porque incluimos a alguien en la lista de 'attendees'.
+                return f"✅ ÉXITO: Cita en calendario y correo enviado a {attendee_email}. Link: {web_url}"
             
-            # Manejo específico del error 403
-            if response.status_code == 403:
-                return "Error 403 (Acceso Denegado): Verifica que el permiso Calendars.ReadWrite sea de tipo 'Application' y tenga el Círculo Verde en Azure."
-            
-            return f"Error de Microsoft Graph: {response.status_code} - {response.text}"
+            return f"Error Graph: {response.status_code} - {response.text}"
             
         except Exception as e:
-            return f"Excepción en la API: {str(e)}"
+            return f"Excepción: {str(e)}"
