@@ -22,7 +22,7 @@ class OutlookCalendarTool(BaseTool):
         client_secret = os.getenv('AZURE_CLIENT_SECRET')
         # Para cuentas personales, tenant_id DEBE ser 'consumers' en tus Secrets de Streamlit
         tenant_id = os.getenv('AZURE_TENANT_ID', 'consumers') 
-        user_email = "alvaro.armas@outlook.com" # Hardcoded para asegurar el endpoint
+        user_email = "soportesap@frontera-virtual.com" # Hardcoded para asegurar el endpoint
 
         if not all([client_id, client_secret, tenant_id]):
             return "Error: Faltan credenciales AZURE_CLIENT_ID o AZURE_CLIENT_SECRET en Secrets."
