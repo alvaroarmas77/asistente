@@ -38,7 +38,7 @@ class AsistenteAgendaCrew:
         self.fecha_actual = datetime.now().strftime('%A, %d de %B de %Y')
         
         self.shared_llm = LLM(
-            model=os.getenv("MODEL", "gemini/gemini-1.5-flash"), # Sugerencia: Flash es más rápido para agendar
+            model=os.getenv("MODEL", "gemini/gemini-3.1-pro-preview"), # Sugerencia: Flash es más rápido para agendar
             api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.1, # Bajamos temperatura para mayor precisión en fechas
             max_rpm=10,
